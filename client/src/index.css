@@ -5,8 +5,29 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-bg: #f9fafb;
+    --color-card: #ffffff;
+    --color-card-hover: #f3f4f6;
+    --color-border: #e5e7eb;
+    --color-text: #111827;
+    --color-muted: #6b7280;
+  }
+  
+  .dark {
+    --color-bg: #0a0a0f;
+    --color-card: #12121a;
+    --color-card-hover: #1a1a24;
+    --color-border: #2a2a35;
+    --color-text: #f3f4f6;
+    --color-muted: #9ca3af;
+  }
+  
   body {
-    @apply bg-dark-bg text-gray-100 font-sans antialiased;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    @apply font-sans antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
@@ -28,7 +49,10 @@
   }
 
   .input-field {
-    @apply w-full bg-[#161622] border border-dark-border rounded-lg py-2.5 px-4 text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all;
+    background-color: var(--color-card);
+    border-color: var(--color-border);
+    color: var(--color-text);
+    @apply w-full border rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all;
   }
 }
 
@@ -39,16 +63,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0f; 
+  background-color: var(--color-bg); 
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a35; 
+  background-color: var(--color-border); 
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f4e; 
+  background-color: var(--color-card-hover); 
 }
 
 /* React Quill Dark Mode Overrides */
@@ -56,7 +80,10 @@
   @apply bg-dark-card border-dark-border rounded-t-lg !important;
 }
 .ql-container {
-  @apply bg-[#161622] border-dark-border rounded-b-lg text-gray-100 !important;
+  background-color: var(--color-bg) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+  @apply border rounded-b-lg !important;
   min-height: 200px;
 }
 .ql-editor.ql-blank::before {

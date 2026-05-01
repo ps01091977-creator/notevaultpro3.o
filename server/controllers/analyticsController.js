@@ -1,6 +1,7 @@
 const Note = require('../models/Note');
 const Video = require('../models/Video');
 const Subject = require('../models/Subject');
+const User = require('../models/User');
 const mongoose = require('mongoose');
 
 // @desc    Get analytics overview
@@ -69,4 +70,24 @@ const getWeeklyActivity = async (req, res, next) => {
   }
 };
 
-module.exports = { getOverview, getWeeklyActivity };
+// @desc    Get global stats for home page
+// @route   GET /api/analytics/global
+// @access  Public
+const getGlobalStats = async (req, res, next) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalNotes = await Note.countDocuments();
+    const totalVideos = await Video.countDocuments();
+
+    res.json({
+      activeStudents: totalUsers,
+      subjectNotes: totalNotes,
+      videoLectures: totalVideos,
+      averageRating: '4.9/5'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getOverview, getWeeklyActivity, getGlobalStats };

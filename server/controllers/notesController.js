@@ -1,15 +1,24 @@
 const Note = require('../models/Note');
+const Notification = require('../models/Notification');
 
 // @desc    Get all notes
 // @route   GET /api/notes
 // @access  Private
 const getNotes = async (req, res, next) => {
   try {
-    const { subject, tag, search } = req.query;
+    const { subject, folder, tag, search, section } = req.query;
     let query = {};
 
     if (subject) query.subject = subject;
+    if (folder) query.folder = folder;
     if (tag) query.tags = tag;
+    if (section) {
+      if (section === 'notes') {
+        query.$or = [{ section: 'notes' }, { section: { $exists: false } }];
+      } else {
+        query.section = section;
+      }
+    }
     if (search) {
       query.title = { $regex: search, $options: 'i' };
     }
@@ -26,20 +35,32 @@ const getNotes = async (req, res, next) => {
 // @access  Private
 const createNote = async (req, res, next) => {
   try {
-    const { title, content, type, fileUrl, subject, tags, color, isPinned } = req.body;
+    const { title, content, section, type, fileUrl, subject, folder, tags, color, isPinned } = req.body;
     
     const note = await Note.create({
       title,
       content,
+      section: section || 'notes',
       type,
       fileUrl,
       subject,
+      folder,
       tags,
       color,
       isPinned,
       owner: req.user._id
     });
     
+    // Create global notification for new note
+    await Notification.create({
+      isGlobal: true,
+      isAdminOnly: false,
+      title: 'New Content Uploaded',
+      message: `Admin has uploaded a new ${section || 'note'}: ${title}. Check it out!`,
+      type: 'upload',
+      link: `/courses`
+    });
+
     res.status(201).json(note);
   } catch (error) {
     next(error);

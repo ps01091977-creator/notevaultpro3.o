@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Filter, MoreVertical, Pin, Trash2, Edit2, FileText, Grid, List, BookText } from 'lucide-react';
+import { Plus, Search, MoreVertical, Pin, Trash2, FileText, Grid, List, BookText, FolderOpen, ArrowLeft } from 'lucide-react';
 import api from '../api/axios';
 
 import { useAuthStore } from '../store/authStore';
 
 const Notes = () => {
+  const sectionOptions = [
+    { value: 'notes', label: 'Notes' },
+    { value: 'pyqs', label: 'PYQs' },
+    { value: 'quantum', label: 'Quantum' },
+    { value: 'syllabus', label: 'Syllabus' }
+  ];
   const { user } = useAuthStore();
   const [notes, setNotes] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -14,13 +20,14 @@ const Notes = () => {
   const [loading, setLoading] = useState(true);
 
   const [isAddingNote, setIsAddingNote] = useState(false);
-  const [newNote, setNewNote] = useState({ title: '', content: '', subject: '', type: 'text' });
+  const [newNote, setNewNote] = useState({ title: '', content: '', subject: '', section: 'notes', type: 'text' });
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedNoteView, setSelectedNoteView] = useState(null);
+  const [selectedSubject, setSelectedSubject] = useState(null);
 
   const getBackendUrl = () => {
-    return import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000';
+    return '';
   };
 
   useEffect(() => {
@@ -68,42 +75,77 @@ const Notes = () => {
     }
   };
 
-  const filteredNotes = notes.filter(n => n.title.toLowerCase().includes(search.toLowerCase()));
+  const filteredNotes = notes.filter((n) => {
+    const matchesSearch = n.title.toLowerCase().includes(search.toLowerCase());
+    const matchesSubject = selectedSubject ? n.subject?._id === selectedSubject._id : false;
+    return matchesSearch && matchesSubject;
+  });
+
+  const subjectFolders = subjects
+    .map((subject) => {
+      const subjectNotes = notes.filter((note) => note.subject?._id === subject._id);
+      return { ...subject, noteCount: subjectNotes.length };
+    })
+    .filter((subject) => subject.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div className="h-full flex flex-col space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">My Notes</h1>
-          <p className="text-gray-400">Manage and organize your study materials</p>
+          <h1 className="text-3xl font-bold">{selectedSubject ? selectedSubject.name : 'My Notes'}</h1>
+          <p className="text-gray-400">
+            {selectedSubject ? 'Browse notes inside this subject folder' : 'Open a subject folder to view its notes'}
+          </p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
             <input 
               type="text" 
-              placeholder="Search notes..." 
+              placeholder={selectedSubject ? 'Search notes in this subject...' : 'Search subjects...'} 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="input-field pl-10 h-10"
             />
           </div>
-          <div className="flex bg-dark-card border border-dark-border rounded-lg p-1">
-            <button 
-              onClick={() => setView('grid')}
-              className={`p-1.5 rounded-md ${view === 'grid' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
+          {selectedSubject && (
+            <button
+              onClick={() => {
+                setSelectedSubject(null);
+                setSearch('');
+              }}
+              className="btn-secondary flex items-center gap-2 h-10"
             >
-              <Grid size={18} />
+              <ArrowLeft size={16} />
+              <span>Back to Folders</span>
             </button>
-            <button 
-              onClick={() => setView('list')}
-              className={`p-1.5 rounded-md ${view === 'list' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
-            >
-              <List size={18} />
-            </button>
-          </div>
+          )}
+          {selectedSubject && (
+            <div className="flex bg-dark-card border border-dark-border rounded-lg p-1">
+              <button 
+                onClick={() => setView('grid')}
+                className={`p-1.5 rounded-md ${view === 'grid' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
+              >
+                <Grid size={18} />
+              </button>
+              <button 
+                onClick={() => setView('list')}
+                className={`p-1.5 rounded-md ${view === 'list' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
+              >
+                <List size={18} />
+              </button>
+            </div>
+          )}
           {user?.role === 'admin' && (
-            <button onClick={() => setIsAddingNote(true)} className="btn-primary flex items-center gap-2 h-10">
+            <button
+              onClick={() => {
+                if (selectedSubject) {
+                  setNewNote((prev) => ({ ...prev, subject: selectedSubject._id }));
+                }
+                setIsAddingNote(true);
+              }}
+              className="btn-primary flex items-center gap-2 h-10"
+            >
               <Plus size={18} />
               <span>New Note</span>
             </button>
@@ -116,6 +158,44 @@ const Notes = () => {
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>
       ) : (
+        !selectedSubject ? (
+          <div className="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start">
+            {subjectFolders.map((subject) => (
+              <motion.div
+                key={subject._id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={() => setSelectedSubject(subject)}
+                className="glass-card p-6 cursor-pointer hover:border-primary/50 transition-all group"
+                style={{ borderTop: `4px solid ${subject.color || '#7c3aed'}` }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center"
+                      style={{ backgroundColor: `${subject.color || '#7c3aed'}20` }}
+                    >
+                      <FolderOpen className="text-primary" size={22} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{subject.name}</h3>
+                      <p className="text-sm text-gray-400">Open subject notes</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold">{subject.noteCount}</p>
+                    <p className="text-xs text-gray-400">notes</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+            {subjectFolders.length === 0 && (
+              <div className="col-span-full py-20 text-center text-gray-500">
+                No subjects found.
+              </div>
+            )}
+          </div>
+        ) : (
         <div className={`flex-1 overflow-y-auto ${view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start' : 'space-y-4'}`}>
           <AnimatePresence>
             {filteredNotes.map((note) => (
@@ -164,6 +244,9 @@ const Notes = () => {
                   <span className="text-xs px-2.5 py-1 rounded-full bg-dark-bg text-gray-300 border border-dark-border">
                     {note.subject?.name || 'General'}
                   </span>
+                  <span className="text-[11px] uppercase tracking-wide px-2 py-1 rounded-full bg-primary/15 text-primary border border-primary/30">
+                    {note.section || 'notes'}
+                  </span>
                   <span className="text-xs text-gray-500">
                     {new Date(note.updatedAt).toLocaleDateString()}
                   </span>
@@ -177,10 +260,11 @@ const Notes = () => {
           </AnimatePresence>
           {filteredNotes.length === 0 && (
             <div className="col-span-full py-20 text-center text-gray-500">
-              No notes found. Create your first note!
+              No notes found in this subject.
             </div>
           )}
         </div>
+        )
       )}
 
       {/* Add Note Modal */}
@@ -214,7 +298,7 @@ const Notes = () => {
                 });
                 setNotes([data, ...notes]);
                 setIsAddingNote(false);
-                setNewNote({ title: '', content: '', subject: '', type: 'text' });
+                setNewNote({ title: '', content: '', subject: '', section: 'notes', type: 'text' });
                 setSelectedFile(null);
               } catch (error) {
                 console.error(error);
@@ -238,6 +322,16 @@ const Notes = () => {
                 >
                   <option value="" disabled>Select a subject</option>
                   {subjects.map(sub => <option key={sub._id} value={sub._id}>{sub.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-1">Section</label>
+                <select
+                  value={newNote.section}
+                  onChange={e => setNewNote({ ...newNote, section: e.target.value })}
+                  className="input-field"
+                >
+                  {sectionOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
               </div>
 

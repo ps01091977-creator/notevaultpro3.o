@@ -3,12 +3,14 @@ const mongoose = require('mongoose');
 const videoSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, default: '' },
+  section: { type: String, enum: ['notes', 'pyqs', 'quantum', 'syllabus', 'video-lectures'], default: 'notes' },
   type: { type: String, enum: ['upload', 'url'], default: 'url' },
   fileUrl: { type: String, default: '' },
   youtubeUrl: { type: String, default: '' },
   thumbnail: { type: String, default: '' },
   duration: { type: Number, default: 0 }, // in seconds
   subject: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject' },
+  folder: { type: mongoose.Schema.Types.ObjectId, ref: 'Folder' },
   playlist: { type: String, default: '' },
   watchProgress: { type: Number, default: 0 }, // in seconds
   bookmarks: [{

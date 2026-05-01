@@ -29,10 +29,14 @@ app.use('/uploads', express.static('uploads'));
 
 // Mount routers (to be implemented)
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/courses', require('./routes/courses'));
 app.use('/api/subjects', require('./routes/subjects'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/videos', require('./routes/videos'));
+app.use('/api/folders', require('./routes/folders'));
 app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/settings', require('./routes/siteSettings'));
 
 // Error middlewares
 app.use(notFound);

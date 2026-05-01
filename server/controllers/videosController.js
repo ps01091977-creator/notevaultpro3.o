@@ -1,14 +1,23 @@
 const Video = require('../models/Video');
+const Notification = require('../models/Notification');
 
 // @desc    Get all videos
 // @route   GET /api/videos
 // @access  Private
 const getVideos = async (req, res, next) => {
   try {
-    const { subject, search } = req.query;
+    const { subject, folder, search, section } = req.query;
     let query = {};
 
     if (subject) query.subject = subject;
+    if (folder) query.folder = folder;
+    if (section) {
+      if (section === 'notes') {
+        query.$or = [{ section: 'notes' }, { section: { $exists: false } }];
+      } else {
+        query.section = section;
+      }
+    }
     if (search) {
       query.title = { $regex: search, $options: 'i' };
     }
@@ -35,6 +44,7 @@ const createVideo = async (req, res, next) => {
       thumbnail,
       duration,
       subject,
+      folder,
       playlist
     } = req.body;
 
@@ -44,6 +54,8 @@ const createVideo = async (req, res, next) => {
       thumbnail,
       duration,
       subject,
+      folder,
+      section: req.body.section || 'notes',
       playlist,
       owner: req.user._id
     };
@@ -63,6 +75,17 @@ const createVideo = async (req, res, next) => {
     videoData.type = type || (videoData.youtubeUrl ? 'url' : 'upload');
 
     const video = await Video.create(videoData);
+
+    // Create global notification for new video
+    await Notification.create({
+      isGlobal: true,
+      isAdminOnly: false,
+      title: 'New Video Lecture',
+      message: `Admin has uploaded a new video lecture: ${title}. Keep learning!`,
+      type: 'upload',
+      link: `/courses`
+    });
+
     res.status(201).json(video);
   } catch (error) {
     next(error);

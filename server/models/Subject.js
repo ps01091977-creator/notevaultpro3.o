@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const subjectSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  course: { type: String, required: true, default: 'B.Tech' },
+  department: { type: String, default: 'General' },
   semester: { type: Number, required: true, min: 1, max: 8 },
   color: { type: String, default: '#7c3aed' },
   emoji: { type: String, default: '📚' },

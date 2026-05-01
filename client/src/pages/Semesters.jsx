@@ -8,25 +8,40 @@ import { useAuthStore } from '../store/authStore';
 
 const Semesters = () => {
   const { user } = useAuthStore();
-  const semesters = [1, 2, 3, 4, 5, 6, 7, 8];
+  const [coursesList, setCoursesList] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // New subject state
   const [newSubjectName, setNewSubjectName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const { data } = await api.get('/courses');
+        setCoursesList(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoadingCourses(false);
+      }
+    };
+    fetchCourses();
+  }, []);
+
   const openSemester = async (sem) => {
     setSelectedSemester(sem);
-    fetchSubjects(sem);
+    fetchSubjects(sem, selectedCourse.name);
   };
 
-  const fetchSubjects = async (sem) => {
+  const fetchSubjects = async (sem, courseCode = selectedCourse.name) => {
     setLoading(true);
     try {
-      const res = await api.get(`/subjects?semester=${sem}`);
+      const res = await api.get(`/subjects?semester=${sem}&course=${encodeURIComponent(courseCode)}`);
       setSubjects(res.data);
     } catch (error) {
       console.error(error);
@@ -43,6 +58,7 @@ const Semesters = () => {
     try {
       const res = await api.post('/subjects', {
         name: newSubjectName,
+        course: selectedCourse.name,
         semester: selectedSemester,
         color: ['#7c3aed', '#06b6d4', '#f59e0b', '#ec4899', '#10b981'][Math.floor(Math.random() * 5)],
         emoji: '📚'
@@ -71,28 +87,68 @@ const Semesters = () => {
   return (
     <div className="h-full flex flex-col space-y-6 relative">
       <div>
-        <h1 className="text-3xl font-bold">Semesters</h1>
-        <p className="text-gray-400">Select your semester to access subjects, videos, and notes</p>
+        <h1 className="text-3xl font-bold">Courses & Semesters</h1>
+        <p className="text-gray-400">Select course, then semester, then subjects (Course → Semester → Subject)</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {semesters.map((sem) => (
-          <motion.div
-            key={sem}
-            whileHover={{ y: -5, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => openSemester(sem)}
-            className="glass-card p-8 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden"
-          >
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/30 transition-colors"></div>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white mb-4 shadow-lg group-hover:shadow-glow transition-all">
-              <GraduationCap size={32} />
-            </div>
-            <h2 className="text-2xl font-bold">Semester {sem}</h2>
-            <p className="text-gray-400 mt-2 text-sm group-hover:text-primary transition-colors">View Subjects →</p>
-          </motion.div>
-        ))}
+      <div className={`grid grid-cols-2 gap-6 ${!selectedCourse ? 'flex-1 grid-rows-2 min-h-[70vh]' : ''}`}>
+        {loadingCourses ? (
+          <div className="col-span-2 flex justify-center py-10">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+          </div>
+        ) : (
+          coursesList.map((course) => (
+            <motion.div
+              key={course._id}
+              whileHover={{ y: -5, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                setSelectedCourse(course);
+                setSelectedSemester(null);
+                setSubjects([]);
+              }}
+              className={`glass-card flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden border ${
+                selectedCourse?.name === course.name ? 'border-primary shadow-[0_0_20px_rgba(124,58,237,0.3)]' : 'border-dark-border'
+              } ${selectedCourse ? 'py-6' : 'h-full'}`}
+            >
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/30 transition-colors"></div>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white mb-4 shadow-lg group-hover:shadow-glow transition-all">
+                <GraduationCap size={32} />
+              </div>
+              <h2 className="text-2xl font-bold">{course.name}</h2>
+              <p className="text-gray-400 mt-2 text-sm group-hover:text-primary transition-colors">{course.maxSemesters} Semesters</p>
+            </motion.div>
+          ))
+        )}
       </div>
+
+      {selectedCourse && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-5"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">{selectedCourse.name} Semesters</h2>
+            <span className="text-sm text-gray-400">Select a semester</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+            {Array.from({ length: selectedCourse.maxSemesters }, (_, i) => i + 1).map((sem) => (
+              <button
+                key={sem}
+                onClick={() => openSemester(sem)}
+                className={`rounded-lg border px-4 py-3 text-center font-semibold transition-colors ${
+                  selectedSemester === sem
+                    ? 'border-primary bg-primary/20 text-primary'
+                    : 'border-dark-border bg-[#161622] text-gray-200 hover:border-primary/60'
+                }`}
+              >
+                Sem {sem}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Subjects Modal */}
       <AnimatePresence>
@@ -116,7 +172,7 @@ const Semesters = () => {
                 <div>
                   <h2 className="text-2xl font-bold flex items-center gap-2">
                     <GraduationCap className="text-primary" /> 
-                    Semester {selectedSemester} Subjects
+                    {selectedCourse.name} - Semester {selectedSemester} Subjects
                   </h2>
                   <p className="text-sm text-gray-400">Select a subject to view its materials</p>
                 </div>
@@ -153,7 +209,7 @@ const Semesters = () => {
                         {user?.role === 'admin' && (
                           <button 
                             onClick={(e) => handleDeleteSubject(e, subject._id)}
-                            className="p-2 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="p-2 text-gray-500 hover:text-red-400 opacity-100 transition-opacity"
                           >
                             <Trash2 size={18} />
                           </button>
@@ -163,7 +219,7 @@ const Semesters = () => {
 
                     {subjects.length === 0 && (
                       <div className="col-span-full py-8 text-center text-gray-500">
-                        No subjects added for this semester yet.
+                        No subjects added for this course/semester yet.
                       </div>
                     )}
                   </div>

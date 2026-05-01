@@ -9,6 +9,17 @@ const getSubjects = async (req, res, next) => {
     if (req.query.semester) {
       query.semester = parseInt(req.query.semester);
     }
+    if (req.query.course) {
+      // Backward compatibility: older records may not have `course`.
+      if (req.query.course === 'B.Tech') {
+        query.$or = [{ course: 'B.Tech' }, { course: { $exists: false } }];
+      } else {
+        query.course = req.query.course;
+      }
+    }
+    if (req.query.department) {
+      query.department = req.query.department;
+    }
     const subjects = await Subject.find(query);
     res.json(subjects);
   } catch (error) {
@@ -21,9 +32,11 @@ const getSubjects = async (req, res, next) => {
 // @access  Private
 const createSubject = async (req, res, next) => {
   try {
-    const { name, semester, color, emoji } = req.body;
+    const { name, course, department, semester, color, emoji } = req.body;
     const subject = await Subject.create({
       name,
+      course: course || 'B.Tech',
+      department: department || 'General',
       semester,
       color,
       emoji,
@@ -47,7 +60,7 @@ const updateSubject = async (req, res, next) => {
       throw new Error('Subject not found');
     }
 
-    if (subject.owner.toString() !== req.user._id.toString()) {
+    if (req.user.role !== 'admin' && subject.owner?.toString() !== req.user._id.toString()) {
       res.status(401);
       throw new Error('User not authorized');
     }
@@ -76,7 +89,7 @@ const deleteSubject = async (req, res, next) => {
       throw new Error('Subject not found');
     }
 
-    if (subject.owner.toString() !== req.user._id.toString()) {
+    if (req.user.role !== 'admin' && subject.owner?.toString() !== req.user._id.toString()) {
       res.status(401);
       throw new Error('User not authorized');
     }

@@ -8,9 +8,15 @@ import MainLayout from './components/layout/MainLayout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
+import Courses from './pages/Courses';
+import FeaturesServices from './pages/FeaturesServices';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import CourseResults from './pages/CourseResults';
+import SemestersList from './pages/SemestersList';
+import SubjectsList from './pages/SubjectsList';
 import Notes from './pages/Notes';
-import Videos from './pages/Videos';
-import Semesters from './pages/Semesters';
 import SubjectDetail from './pages/SubjectDetail';
 import Analytics from './pages/Analytics';
 
@@ -27,17 +33,22 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        <Route path="/" element={
-          <ProtectedRoute>
-            <MainLayout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<Dashboard />} />
-          <Route path="notes" element={<Notes />} />
-          <Route path="videos" element={<Videos />} />
-          <Route path="semesters" element={<Semesters />} />
-          <Route path="subjects/:id" element={<SubjectDetail />} />
-          <Route path="analytics" element={<Analytics />} />
+        <Route path="/" element={<MainLayout />}>
+          {/* Public Routes */}
+          <Route index element={<Home />} />
+          <Route path="courses" element={<Courses />} />
+          <Route path="courses/results" element={<CourseResults />} />
+          <Route path="features-services" element={<FeaturesServices />} />
+          <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+          
+          {/* Protected Routes */}
+          <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
+          <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+          <Route path="subjects/:id" element={<ProtectedRoute><SubjectDetail /></ProtectedRoute>} />
+          <Route path="course/:courseId/semesters" element={<ProtectedRoute><SemestersList /></ProtectedRoute>} />
+          <Route path="course/:courseId/semesters/:semester/subjects" element={<ProtectedRoute><SubjectsList /></ProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const generateToken = require('../utils/generateToken');
 
 // @desc    Register a new user
@@ -17,6 +18,15 @@ const registerUser = async (req, res, next) => {
     const user = await User.create({ name, email, password, role: 'user' });
 
     if (user) {
+      // Notify admins
+      await Notification.create({
+        isGlobal: false,
+        isAdminOnly: true,
+        title: 'New User Registration',
+        message: `${name} (${email}) has just created a new account.`,
+        type: 'signup'
+      });
+
       res.status(201).json({
         _id: user._id,
         name: user.name,
@@ -44,6 +54,17 @@ const loginUser = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+      // Notify admins about login
+      if (user.role !== 'admin') {
+        await Notification.create({
+          isGlobal: false,
+          isAdminOnly: true,
+          title: 'User Login',
+          message: `${user.name} has just logged in to the portal.`,
+          type: 'login'
+        });
+      }
+
       res.json({
         _id: user._id,
         name: user.name,

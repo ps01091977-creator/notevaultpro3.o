@@ -23,10 +23,18 @@ const seedAdmin = async () => {
       console.log('⚠️ Admin user already exists. (Email: admin@notevault.com)');
     }
   } catch (error) {
-    console.error('Error seeding admin:', error);
+    console.error('Error seeding admin:', error);       
   } finally {
     process.exit();
   }
 };
 
 seedAdmin();
+
+/*
+
+admin@notevault.com
+
+run the 
+
+*/
