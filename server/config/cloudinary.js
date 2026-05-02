@@ -1,6 +1,6 @@
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
+const { Readable } = require('stream');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,19 +8,21 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => {
-    const isVideo = file.mimetype.startsWith('video/');
-    const isPdf = file.mimetype === 'application/pdf';
-    return {
-      folder: 'notevaultpro',
-      resource_type: isVideo ? 'video' : isPdf ? 'raw' : 'image',
-      allowed_formats: ['pdf', 'mp4', 'webm', 'ogg', 'jpg', 'jpeg', 'png'],
-    };
-  },
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-module.exports = { cloudinary, upload };
+const uploadToCloudinary = (buffer, mimetype) => {
+  return new Promise((resolve, reject) => {
+    const resourceType = mimetype.startsWith('video/') ? 'video' : mimetype === 'application/pdf' ? 'raw' : 'image';
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'notevaultpro', resource_type: resourceType },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+    Readable.from(buffer).pipe(stream);
+  });
+};
+
+module.exports = { cloudinary, upload, uploadToCloudinary };

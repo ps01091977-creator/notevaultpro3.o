@@ -1,7 +1,7 @@
 const express = require('express');
 const { getVideos, createVideo, updateVideo, deleteVideo, updateProgress } = require('../controllers/videosController');
 const { protect, admin } = require('../middleware/auth');
-const { upload } = require('../config/cloudinary');
+const { upload, uploadToCloudinary } = require('../config/cloudinary');
 
 const router = express.Router();
 
@@ -15,11 +15,13 @@ router.route('/:id')
 
 router.put('/:id/progress', protect, updateProgress);
 
-router.post('/upload', protect, admin, upload.single('file'), (req, res) => {
-  if (req.file) {
-    res.json({ fileUrl: req.file.path });
-  } else {
-    res.status(400).json({ message: 'No file uploaded' });
+router.post('/upload', protect, admin, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype);
+    res.json({ fileUrl: result.secure_url });
+  } catch (error) {
+    res.status(500).json({ message: 'Upload failed', error: error.message });
   }
 });
 
