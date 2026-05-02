@@ -17,7 +17,10 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  origin: ['https://notevaultpro3-o.vercel.app', 'http://localhost:5173'],
+  credentials: true
+}));
 
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
