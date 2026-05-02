@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
 const connectDB = require('./config/db');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
@@ -17,7 +18,6 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS
-// Enable CORS
 app.use(cors({
   origin: /\.vercel\.app$/,
   credentials: true
@@ -29,9 +29,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Set up static folder for uploads
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Mount routers (to be implemented)
+// Mount routers
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/subjects', require('./routes/subjects'));
