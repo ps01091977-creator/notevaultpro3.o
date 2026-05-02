@@ -25,7 +25,7 @@ const About = () => {
         className="text-center space-y-6 pt-10"
       >
         <span className="px-4 py-1.5 rounded-full bg-primary/10 text-primary font-semibold text-sm tracking-wide">
-          ABOUT {settings?.siteName?.toUpperCase() || 'NOTEVAULT PRO'}
+          ABOUT {settings?.siteName?.toUpperCase() || 'NOTE VAULT PRO'}
         </span>
         <h1 className="text-4xl md:text-6xl font-extrabold text-dark-text">
           Redefining <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Digital Learning</span>
@@ -68,7 +68,7 @@ const About = () => {
         <div className="flex-1 space-y-6">
           <h2 className="text-3xl font-bold text-dark-text">Our Story</h2>
           <p className="text-dark-muted leading-relaxed text-lg whitespace-pre-line">
-            {settings?.aboutStory || `NoteVault Pro was born out of a simple frustration: finding the right study material before exams was harder than actually studying it.\nStudents spent hours scrolling through endless WhatsApp groups and unorganized Google Drives.\n\nWe built this platform to bring order to chaos. Our unique hierarchical architecture ensures that every PDF, every syllabus, and every video lecture is exactly where you expect it to be.`}
+            {settings?.aboutStory || `Note Vault Pro was born out of a simple frustration: finding the right study material before exams was harder than actually studying it.\nStudents spent hours scrolling through endless WhatsApp groups and unorganized Google Drives.\n\nWe built this platform to bring order to chaos. Our unique hierarchical architecture ensures that every PDF, every syllabus, and every video lecture is exactly where you expect it to be.`}
           </p>
         </div>
         <div className="flex-1 relative">

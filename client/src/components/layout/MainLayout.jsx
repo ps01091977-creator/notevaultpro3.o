@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, 
+import {
+  LayoutDashboard,
   Home,
-  GraduationCap, 
+  GraduationCap,
   Sparkles,
   Info,
-  Phone, 
+  Phone,
   LogOut,
   Menu,
   Search,
   Bell,
   Sun,
-  Moon
+  Moon,
+  Inbox
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -105,6 +106,10 @@ const MainLayout = () => {
   if (user) {
     navItems.splice(1, 0, { name: 'My Dashboard', path: '/dashboard', icon: LayoutDashboard });
   }
+  
+  if (user?.role === 'admin') {
+    navItems.push({ name: 'Admin Contact', path: '/admin/contact', icon: Inbox });
+  }
 
   return (
     <div className="flex h-screen bg-dark-bg overflow-hidden relative">
@@ -112,7 +117,7 @@ const MainLayout = () => {
       <AnimatePresence>
         {isSidebarOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -132,10 +137,10 @@ const MainLayout = () => {
                     NV
                   </div>
                   <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-dark-text to-dark-muted">
-                    NoteVault
+                    Note Vault Pro
                   </span>
                 </div>
-                <button 
+                <button
                   onClick={() => setIsSidebarOpen(false)}
                   className="p-2 rounded-lg hover:bg-dark-border text-dark-muted transition-colors"
                 >
@@ -151,8 +156,8 @@ const MainLayout = () => {
                     onClick={() => setIsSidebarOpen(false)}
                     className={({ isActive }) => `
                       flex items-center px-4 py-3.5 rounded-xl transition-all duration-300
-                      ${isActive 
-                        ? 'bg-primary/10 text-primary border border-primary/20 shadow-[inset_0_0_10px_rgba(124,58,237,0.1)]' 
+                      ${isActive
+                        ? 'bg-primary/10 text-primary border border-primary/20 shadow-[inset_0_0_10px_rgba(124,58,237,0.1)]'
                         : 'text-dark-muted hover:text-dark-text hover:bg-dark-cardHover'}
                     `}
                   >
@@ -190,7 +195,7 @@ const MainLayout = () => {
         {/* Navbar */}
         <header className="h-20 bg-dark-bg/80 backdrop-blur-lg border-b border-dark-border flex items-center justify-between px-6 z-[100] sticky top-0">
           <div className="flex items-center gap-4 flex-1">
-            <button 
+            <button
               onClick={() => setIsSidebarOpen(true)}
               className="p-2 rounded-lg hover:bg-dark-border text-dark-muted hover:text-dark-text transition-colors"
             >
@@ -201,39 +206,39 @@ const MainLayout = () => {
                 NV
               </div>
               <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-dark-text to-dark-muted hidden sm:block">
-                NoteVault
+                NoteVault Pro
               </span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4 sm:gap-6 ml-4">
-            {!user && (
-              <div className="hidden md:flex items-center gap-5 mr-4 text-sm font-medium">
+              <div className="hidden md:flex items-center gap-6 mr-4 text-base font-medium">
                 <NavLink to="/courses" className="text-dark-muted hover:text-primary transition-colors">Courses</NavLink>
                 <NavLink to="/about" className="text-dark-muted hover:text-primary transition-colors">About Us</NavLink>
                 <NavLink to="/contact" className="text-dark-muted hover:text-primary transition-colors">Contact Us</NavLink>
-                <div className="flex items-center gap-3 ml-2 border-l border-dark-border pl-5">
-                  <button onClick={() => navigate('/login')} className="text-dark-text hover:text-primary font-bold transition-colors">
-                    Login
-                  </button>
-                  <button onClick={() => navigate('/register')} className="px-5 py-2 rounded-full bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-glow hover:scale-105">
-                    Sign Up
-                  </button>
-                </div>
+                {!user && (
+                  <div className="flex items-center gap-4 ml-2 border-l border-dark-border pl-6">
+                    <button onClick={() => navigate('/login')} className="text-dark-text hover:text-primary font-bold transition-colors">
+                      Login
+                    </button>
+                    <button onClick={() => navigate('/register')} className="px-6 py-2.5 rounded-full bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-glow hover:scale-105">
+                      Sign Up
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
 
-            <button 
+            <button
               onClick={toggleTheme}
               className="p-2 text-dark-muted hover:text-dark-text transition-colors"
             >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              {theme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
             </button>
-            
+
             {user && (
               <>
                 <div className="relative" ref={notificationRef}>
-                  <button 
+                  <button
                     onClick={handleNotificationClick}
                     className="relative p-2 text-dark-muted hover:text-dark-text transition-colors"
                   >
@@ -245,7 +250,7 @@ const MainLayout = () => {
 
                   <AnimatePresence>
                     {showNotifications && (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -263,8 +268,8 @@ const MainLayout = () => {
                             notifications.map(notification => {
                               const isUnread = !notification.readBy.includes(user._id);
                               return (
-                                <div 
-                                  key={notification._id} 
+                                <div
+                                  key={notification._id}
                                   onClick={() => {
                                     setShowNotifications(false);
                                     if (notification.link) navigate(notification.link);
@@ -282,7 +287,7 @@ const MainLayout = () => {
                                       {notification.message}
                                     </p>
                                     <p className="text-[10px] text-dark-muted font-medium">
-                                      {new Date(notification.createdAt).toLocaleDateString()} at {new Date(notification.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                      {new Date(notification.createdAt).toLocaleDateString()} at {new Date(notification.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                   </div>
                                 </div>
@@ -309,7 +314,7 @@ const MainLayout = () => {
                 <div className="flex items-center gap-3">
                   <div className="text-right hidden md:block">
                     <p className="text-sm font-medium text-dark-text">{user.name}</p>
-                    <p className="text-xs text-primary">{user.role === 'admin' ? 'Admin Panel' : 'Pro Member'}</p>
+                    <p className="text-xs text-primary">{user.role === 'admin' ? 'Admin Panel' : 'Student'}</p>
                   </div>
                   <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-accent p-0.5 cursor-pointer hover:shadow-glow transition-shadow">
                     <div className="w-full h-full rounded-full bg-dark-bg flex items-center justify-center font-bold text-sm">

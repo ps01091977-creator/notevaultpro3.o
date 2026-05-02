@@ -91,7 +91,7 @@ const FeaturesServices = () => {
               <Sparkles className="text-accent" /> Premium Services & Extensions
             </h2>
             <p className="text-dark-muted text-lg leading-relaxed">
-              Need custom modules like branch-specific filters, premium access controls, or batch-wise content visibility? NoteVault Pro is built with scalability in mind.
+              Need custom modules like branch-specific filters, premium access controls, or batch-wise content visibility? Note Vault Pro is built with scalability in mind.
             </p>
           </div>
           <div className="flex-shrink-0">

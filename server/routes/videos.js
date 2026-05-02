@@ -6,7 +6,7 @@ const upload = require('../middleware/upload');
 const router = express.Router();
 
 router.route('/')
-  .get(protect, getVideos)
+  .get(getVideos)
   .post(protect, admin, createVideo);
 
 router.route('/:id')

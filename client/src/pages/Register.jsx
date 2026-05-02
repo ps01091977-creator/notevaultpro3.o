@@ -36,7 +36,7 @@ const Register = () => {
             NV
           </div>
           <h2 className="text-3xl font-bold mb-2">Create Account</h2>
-          <p className="text-gray-400">Join NoteVault Pro today</p>
+          <p className="text-gray-400">Join Note Vault Pro today</p>
         </div>
 
         {error && (
@@ -62,6 +62,7 @@ const Register = () => {
             <input
               type="email"
               required
+              autoComplete="off"
               className="input-field"
               placeholder="you@example.com"
               value={email}
@@ -73,6 +74,7 @@ const Register = () => {
             <input
               type="password"
               required
+              autoComplete="new-password"
               className="input-field"
               placeholder="••••••••"
               value={password}

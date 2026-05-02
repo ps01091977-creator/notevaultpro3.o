@@ -19,6 +19,7 @@ import SubjectsList from './pages/SubjectsList';
 import Notes from './pages/Notes';
 import SubjectDetail from './pages/SubjectDetail';
 import Analytics from './pages/Analytics';
+import AdminContact from './pages/AdminContact';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuthStore();
@@ -46,6 +47,7 @@ function App() {
           <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
           <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+          <Route path="admin/contact" element={<ProtectedRoute><AdminContact /></ProtectedRoute>} />
           <Route path="subjects/:id" element={<ProtectedRoute><SubjectDetail /></ProtectedRoute>} />
           <Route path="course/:courseId/semesters" element={<ProtectedRoute><SemestersList /></ProtectedRoute>} />
           <Route path="course/:courseId/semesters/:semester/subjects" element={<ProtectedRoute><SubjectsList /></ProtectedRoute>} />

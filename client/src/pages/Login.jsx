@@ -35,7 +35,7 @@ const Login = () => {
             NV
           </div>
           <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
-          <p className="text-gray-400">Sign in to continue to NoteVault Pro</p>
+          <p className="text-gray-400">Sign in to continue to Note Vault Pro</p>
         </div>
 
         {error && (
@@ -50,6 +50,7 @@ const Login = () => {
             <input
               type="email"
               required
+              autoComplete="off"
               className="input-field"
               placeholder="you@example.com"
               value={email}
@@ -64,6 +65,7 @@ const Login = () => {
             <input
               type="password"
               required
+              autoComplete="new-password"
               className="input-field"
               placeholder="••••••••"
               value={password}

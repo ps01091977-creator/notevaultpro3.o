@@ -135,11 +135,11 @@ const Dashboard = () => {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm font-medium text-gray-300 backdrop-blur-md">
               <Flame size={16} className="text-orange-500" /> 7 Day Streak!
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-dark-text tracking-tight">
               Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">{user?.name?.split(' ')[0] || 'Student'}</span> 👋
             </h1>
             <p className="text-lg text-dark-muted leading-relaxed">
-              You are in the top <span className="text-white font-bold">15%</span> of students this week. Consistency is the key to mastering your engineering subjects. Let's keep the momentum going!
+              You are in the top <span className="text-dark-text font-bold">15%</span> of students this week. Consistency is the key to mastering your engineering subjects. Let's keep the momentum going!
             </p>
             <div className="pt-4 flex items-center gap-4">
               <button className="btn-primary shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:scale-105 transition-transform">

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const siteSettingsSchema = new mongoose.Schema({
   // Global Settings
-  siteName: { type: String, default: 'NoteVault Pro' },
+  siteName: { type: String, default: 'Note Vault Pro' },
   supportEmail: { type: String, default: 'support@notevaultpro.com' },
   developerName: { type: String, default: 'Priyanshu Shakya' },
 
@@ -28,7 +28,7 @@ const siteSettingsSchema = new mongoose.Schema({
 
   // About Page - Story & Mission
   aboutMission: { type: String, default: 'We are on a mission to democratize quality education. By eliminating clutter and organizing materials logically, we empower engineering students to focus purely on learning and scoring high.' },
-  aboutStory: { type: String, default: 'NoteVault Pro was born out of a simple frustration: finding the right study material before exams was harder than actually studying it.' },
+  aboutStory: { type: String, default: 'Note Vault Pro was born out of a simple frustration: finding the right study material before exams was harder than actually studying it.' },
 
   // Contact Page Settings
   contactAddress: { type: String, default: '123 Education Hub, Tech Park' },

@@ -37,6 +37,7 @@ app.use('/api/folders', require('./routes/folders'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/settings', require('./routes/siteSettings'));
+app.use('/api/contact', require('./routes/contact'));
 
 // Error middlewares
 app.use(notFound);

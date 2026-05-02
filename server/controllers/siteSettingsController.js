@@ -31,7 +31,7 @@ exports.getSettings = async (req, res) => {
           }
         ],
         testimonials: [
-          { name: 'Rahul Sharma', role: 'B.Tech CS, 3rd Year', text: 'NoteVault Pro completely changed my study routine.' },
+          { name: 'Rahul Sharma', role: 'B.Tech CS, 3rd Year', text: 'Note Vault Pro completely changed my study routine.' },
           { name: 'Priya Patel', role: 'B.Pharm, 2nd Year', text: 'The video lectures are straight to the point.' },
           { name: 'Ankit Kumar', role: 'MBA, Final Year', text: 'The PYQ section with detailed solutions is a lifesaver.' }
         ]

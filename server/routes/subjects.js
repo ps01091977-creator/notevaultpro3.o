@@ -5,7 +5,7 @@ const { protect, admin } = require('../middleware/auth');
 const router = express.Router();
 
 router.route('/')
-  .get(protect, getSubjects)
+  .get(getSubjects)
   .post(protect, admin, createSubject);
 
 router.route('/:id')

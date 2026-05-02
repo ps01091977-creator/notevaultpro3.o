@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, MessageSquare } from 'lucide-react';
-import { useSettingsStore } from '../store/settingsStore';
+import api from '../api/axios';
 
 const Contact = () => {
-  const { settings } = useSettingsStore();
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSent, setIsSent] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await api.post('/contact', formData);
       setIsSent(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setIsSent(false), 5000);
-    }, 1000);
+    } catch (error) {
+      console.error(error);
+      alert('Failed to send message. Please try again later.');
+    }
   };
 
   const fadeIn = {
@@ -68,8 +70,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="text-sm text-dark-muted font-medium mb-1">Email Us</p>
-                  <a href={`mailto:${settings?.supportEmail || 'support@notevaultpro.com'}`} className="text-lg font-bold text-dark-text hover:text-primary transition-colors truncate block max-w-[200px]">
-                    {settings?.supportEmail || 'support@notevaultpro.com'}
+                  <a href={`mailto:ps01091977@gmail.com`} className="text-lg font-bold text-dark-text hover:text-primary transition-colors truncate block max-w-[200px]">
+                    ps01091977@gmail.com
                   </a>
                 </div>
               </div>
@@ -80,8 +82,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="text-sm text-dark-muted font-medium mb-1">Call Us</p>
-                  <a href={`tel:${settings?.contactPhone || '+91 9557401677'}`} className="text-lg font-bold text-dark-text hover:text-accent transition-colors">
-                    {settings?.contactPhone || '+91 9557401677'}
+                  <a href={`tel:9557401677`} className="text-lg font-bold text-dark-text hover:text-accent transition-colors">
+                    +91 9557401677
                   </a>
                 </div>
               </div>
@@ -93,7 +95,7 @@ const Contact = () => {
                 <div>
                   <p className="text-sm text-dark-muted font-medium mb-1">Location</p>
                   <p className="text-lg font-bold text-dark-text">
-                    {settings?.contactAddress || 'India'}
+                    Noida sec-62
                   </p>
                 </div>
               </div>
