@@ -2,18 +2,41 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { motion } from 'framer-motion';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { register, isLoading, error } = useAuthStore();
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const { register, sendOtp, googleLogin, isLoading, error } = useAuthStore();
   const navigate = useNavigate();
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    try {
+      await sendOtp(email);
+      setOtpSent(true);
+    } catch (err) {
+      // Error handled by store
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await register(name, email, password);
+      await register(name, email, password, otp);
+      navigate('/');
+    } catch (err) {
+      // Error handled by store
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      await googleLogin(credentialResponse.credential);
       navigate('/');
     } catch (err) {
       // Error handled by store
@@ -45,7 +68,23 @@ const Register = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="flex justify-center mb-6">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              console.log('Google Login Failed');
+            }}
+            useOneTap
+          />
+        </div>
+
+        <div className="relative flex items-center py-5">
+          <div className="flex-grow border-t border-gray-700"></div>
+          <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">Or with email</span>
+          <div className="flex-grow border-t border-gray-700"></div>
+        </div>
+
+        <form onSubmit={otpSent ? handleSubmit : handleSendOtp} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-1.5">Full Name</label>
             <input
@@ -55,6 +94,7 @@ const Register = () => {
               placeholder="John Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              disabled={otpSent}
             />
           </div>
           <div>
@@ -67,6 +107,7 @@ const Register = () => {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={otpSent}
             />
           </div>
           <div>
@@ -79,15 +120,30 @@ const Register = () => {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={otpSent}
             />
           </div>
+
+          {otpSent && (
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-1.5">Enter OTP sent to email</label>
+              <input
+                type="text"
+                required
+                className="input-field"
+                placeholder="123456"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+            </div>
+          )}
 
           <button 
             type="submit" 
             disabled={isLoading}
             className="btn-primary w-full py-3 mt-4"
           >
-            {isLoading ? 'Creating Account...' : 'Sign Up'}
+            {isLoading ? 'Processing...' : (otpSent ? 'Verify & Sign Up' : 'Send Verification OTP')}
           </button>
         </form>
 

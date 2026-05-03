@@ -2,17 +2,27 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { motion } from 'framer-motion';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoading, error } = useAuthStore();
+  const { login, googleLogin, isLoading, error } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await login(email, password);
+      navigate('/');
+    } catch (err) {
+      // Error handled by store
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      await googleLogin(credentialResponse.credential);
       navigate('/');
     } catch (err) {
       // Error handled by store
@@ -43,6 +53,22 @@ const Login = () => {
             {error}
           </div>
         )}
+
+        <div className="flex justify-center mb-6">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              console.log('Google Login Failed');
+            }}
+            useOneTap
+          />
+        </div>
+
+        <div className="relative flex items-center py-5">
+          <div className="flex-grow border-t border-gray-700"></div>
+          <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">Or with email</span>
+          <div className="flex-grow border-t border-gray-700"></div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
