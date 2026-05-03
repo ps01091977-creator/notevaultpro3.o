@@ -23,43 +23,14 @@ export const useAuthStore = create(
         }
       },
       
-      register: async (name, email, password, otp) => {
+      register: async (name, email, password) => {
         set({ isLoading: true, error: null });
         try {
-          const { data } = await api.post('/auth/register', { name, email, password, otp });
+          const { data } = await api.post('/auth/register', { name, email, password });
           set({ user: data, isLoading: false });
         } catch (error) {
           set({ 
             error: error.response?.data?.message || 'Registration failed', 
-            isLoading: false 
-          });
-          throw error;
-        }
-      },
-
-      sendOtp: async (email) => {
-        set({ isLoading: true, error: null });
-        try {
-          const { data } = await api.post('/auth/send-otp', { email });
-          set({ isLoading: false });
-          return data;
-        } catch (error) {
-          set({ 
-            error: error.response?.data?.message || 'Failed to send OTP', 
-            isLoading: false 
-          });
-          throw error;
-        }
-      },
-
-      googleLogin: async (idToken) => {
-        set({ isLoading: true, error: null });
-        try {
-          const { data } = await api.post('/auth/google', { idToken });
-          set({ user: data, isLoading: false });
-        } catch (error) {
-          set({ 
-            error: error.response?.data?.message || 'Google login failed', 
             isLoading: false 
           });
           throw error;
