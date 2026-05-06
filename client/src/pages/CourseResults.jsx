@@ -475,7 +475,7 @@ const CourseResults = () => {
                     <h3 className="font-semibold mb-3 text-dark-text">{item.title}</h3>
                     {item.type === 'pdf' ? (
                     <div className="flex gap-2">
-                      <a href={`/view-pdf?url=${encodeURIComponent(item.fileUrl.startsWith('http') ? item.fileUrl : `${getBackendUrl()}${item.fileUrl}`)}&title=${encodeURIComponent(item.title)}`} target="_blank" rel="noreferrer" className="btn-secondary flex items-center gap-2 border border-dark-border">
+                      <a href={item.fileUrl.startsWith('http') ? item.fileUrl : `${getBackendUrl()}${item.fileUrl}`} target="_blank" rel="noreferrer" className="btn-secondary flex items-center gap-2 border border-dark-border">
                         <Eye size={14} />
                         Open
                       </a>
