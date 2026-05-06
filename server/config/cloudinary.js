@@ -13,15 +13,22 @@ const upload = multer({ storage });
 
 const uploadToCloudinary = (buffer, mimetype) => {
   return new Promise((resolve, reject) => {
-    const resourceType = mimetype.startsWith('video/') ? 'video' : mimetype === 'application/pdf' ? 'raw' : 'image';
     const stream = cloudinary.uploader.upload_stream(
-      { folder: 'notevaultpro', resource_type: resourceType },
+      { folder: 'notevaultpro', resource_type: 'auto' },
       (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
+        if (error) {
+          console.error('Cloudinary Upload Error:', error);
+          reject(error);
+        } else {
+          resolve(result);
+        }
       }
     );
-    Readable.from(buffer).pipe(stream);
+    const readable = new Readable();
+    readable._read = () => {};
+    readable.push(buffer);
+    readable.push(null);
+    readable.pipe(stream);
   });
 };
 

@@ -200,7 +200,7 @@ const CourseResults = () => {
       setUploadFile(null);
     } catch (error) {
       console.error(error);
-      alert('Upload failed.');
+      alert(`Upload failed: ${error.response?.data?.message || error.message}`);
     } finally {
       setIsUploading(false);
     }
@@ -470,11 +470,11 @@ const CourseResults = () => {
                     <h3 className="font-semibold mb-3 text-dark-text">{item.title}</h3>
                     {item.type === 'pdf' ? (
                     <div className="flex gap-2">
-                      <a href={`${getBackendUrl()}${item.fileUrl}`} target="_blank" rel="noreferrer" className="btn-secondary flex items-center gap-2 border border-dark-border">
+                      <a href={`https://docs.google.com/viewer?url=${encodeURIComponent(item.fileUrl.startsWith('http') ? item.fileUrl : `${getBackendUrl()}${item.fileUrl}`)}`} target="_blank" rel="noreferrer" className="btn-secondary flex items-center gap-2 border border-dark-border">
                         <Eye size={14} />
                         Open
                       </a>
-                      <a href={`${getBackendUrl()}${item.fileUrl}`} download className="btn-primary flex items-center gap-2">
+                      <a href={item.fileUrl.startsWith('http') ? item.fileUrl : `${getBackendUrl()}${item.fileUrl}`} download className="btn-primary flex items-center gap-2">
                         <Download size={14} />
                         Download
                       </a>

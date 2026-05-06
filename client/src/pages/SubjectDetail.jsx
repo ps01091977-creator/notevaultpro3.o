@@ -158,7 +158,7 @@ const SubjectDetail = () => {
       setUploadFile(null);
     } catch (error) {
       console.error(error);
-      alert('Upload failed.');
+      alert(`Upload failed: ${error.response?.data?.message || error.message}`);
     } finally {
       setIsUploading(false);
     }
@@ -329,7 +329,8 @@ const SubjectDetail = () => {
                       style={{ borderTop: `4px solid ${note.color || '#7c3aed'}` }}
                       onClick={() => {
                         if (note.type === 'pdf') {
-                          window.open(`${getBackendUrl()}${note.fileUrl}`, '_blank');
+                          const fullUrl = note.fileUrl.startsWith('http') ? note.fileUrl : `${getBackendUrl()}${note.fileUrl}`;
+                          window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}`, '_blank');
                         } else {
                           setSelectedNote(note);
                         }
