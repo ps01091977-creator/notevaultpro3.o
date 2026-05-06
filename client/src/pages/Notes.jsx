@@ -283,6 +283,11 @@ const Notes = () => {
               try {
                 let fileUrl = '';
                 if (newNote.type === 'pdf' && selectedFile) {
+                  if (selectedFile.size > 10 * 1024 * 1024) {
+                    alert('File size too large! Cloudinary Free tier only allows PDFs up to 10MB. Please compress your PDF before uploading.');
+                    setIsSubmitting(false);
+                    return;
+                  }
                   const formData = new FormData();
                   formData.append('file', selectedFile);
                   const uploadRes = await api.post('/notes/upload-pdf', formData, {
