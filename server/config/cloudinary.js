@@ -18,13 +18,14 @@ const uploadToCloudinary = (buffer, mimetype, originalname) => {
   return new Promise((resolve, reject) => {
     // Determine public_id (remove extension to let cloudinary handle it or keep it)
     const nameWithoutExt = originalname ? originalname.split('.').slice(0, -1).join('.') : 'document';
+    const isPdf = mimetype === 'application/pdf' || (originalname && originalname.toLowerCase().endsWith('.pdf'));
     
     const stream = cloudinary.uploader.upload_stream(
       { 
         folder: 'notevaultpro', 
-        resource_type: 'auto',
-        public_id: nameWithoutExt,
-        format: mimetype === 'application/pdf' ? 'pdf' : undefined
+        resource_type: isPdf ? 'raw' : 'auto',
+        public_id: isPdf && nameWithoutExt ? nameWithoutExt + '.pdf' : nameWithoutExt,
+        format: !isPdf && mimetype === 'application/pdf' ? 'pdf' : undefined // Fallback if isPdf failed somehow
       },
       (error, result) => {
         if (error) {
