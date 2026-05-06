@@ -100,9 +100,9 @@ const Notes = () => {
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-            <input 
-              type="text" 
-              placeholder={selectedSubject ? 'Search notes in this subject...' : 'Search subjects...'} 
+            <input
+              type="text"
+              placeholder={selectedSubject ? 'Search notes in this subject...' : 'Search subjects...'}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="input-field pl-10 h-10"
@@ -122,13 +122,13 @@ const Notes = () => {
           )}
           {selectedSubject && (
             <div className="flex bg-dark-card border border-dark-border rounded-lg p-1">
-              <button 
+              <button
                 onClick={() => setView('grid')}
                 className={`p-1.5 rounded-md ${view === 'grid' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
               >
                 <Grid size={18} />
               </button>
-              <button 
+              <button
                 onClick={() => setView('list')}
                 className={`p-1.5 rounded-md ${view === 'list' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
               >
@@ -196,74 +196,74 @@ const Notes = () => {
             )}
           </div>
         ) : (
-        <div className={`flex-1 overflow-y-auto ${view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start' : 'space-y-4'}`}>
-          <AnimatePresence>
-            {filteredNotes.map((note) => (
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                key={note._id}
-                className={`glass-card p-5 relative group ${view === 'list' ? 'flex items-center gap-4' : 'flex flex-col min-h-[200px]'}`}
-                style={{ borderTop: `4px solid ${note.color || '#7c3aed'}` }}
-              >
-                <div 
-                  className="flex flex-col flex-1 group cursor-pointer hover:border-primary/50 transition-colors"
-                  onClick={() => {
-                    if (note.type === 'pdf') {
-                      window.open(`/view-pdf?url=${encodeURIComponent(note.fileUrl.startsWith('http') ? note.fileUrl : `${getBackendUrl()}${note.fileUrl}`)}&title=${encodeURIComponent(note.title)}`, '_blank');
-                    } else {
-                      setSelectedNoteView(note);
-                    }
-                  }}
+          <div className={`flex-1 overflow-y-auto ${view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start' : 'space-y-4'}`}>
+            <AnimatePresence>
+              {filteredNotes.map((note) => (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  key={note._id}
+                  className={`glass-card p-5 relative group ${view === 'list' ? 'flex items-center gap-4' : 'flex flex-col min-h-[200px]'}`}
+                  style={{ borderTop: `4px solid ${note.color || '#7c3aed'}` }}
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      {note.type === 'pdf' ? <FileText className="text-red-400" size={20} /> : <BookText className="text-primary" size={20} />}
-                      <h3 className="font-bold text-lg truncate max-w-[200px]">{note.title}</h3>
-                    </div>
-                    {user?.role === 'admin' && (
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
-                        <button onClick={() => handlePin(note._id)} className={`p-1.5 rounded-md hover:bg-dark-border ${note.isPinned ? 'text-accent' : 'text-gray-400'}`}>
-                          <Pin size={16} />
-                        </button>
-                        <button onClick={() => handleDelete(note._id)} className="p-1.5 rounded-md hover:bg-dark-border text-red-400">
-                          <Trash2 size={16} />
-                        </button>
+                  <div
+                    className="flex flex-col flex-1 group cursor-pointer hover:border-primary/50 transition-colors"
+                    onClick={() => {
+                      if (note.type === 'pdf') {
+                        window.open(`${getBackendUrl()}${note.fileUrl}`, '_blank');
+                      } else {
+                        setSelectedNoteView(note);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        {note.type === 'pdf' ? <FileText className="text-red-400" size={20} /> : <BookText className="text-primary" size={20} />}
+                        <h3 className="font-bold text-lg truncate max-w-[200px]">{note.title}</h3>
                       </div>
-                    )}
+                      {user?.role === 'admin' && (
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                          <button onClick={() => handlePin(note._id)} className={`p-1.5 rounded-md hover:bg-dark-border ${note.isPinned ? 'text-accent' : 'text-gray-400'}`}>
+                            <Pin size={16} />
+                          </button>
+                          <button onClick={() => handleDelete(note._id)} className="p-1.5 rounded-md hover:bg-dark-border text-red-400">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={`flex-1 text-gray-400 text-sm ${view === 'list' ? 'line-clamp-1' : 'line-clamp-4 mb-4'}`}>
+                      {note.content ? note.content.replace(/<[^>]*>?/gm, '') : 'No content...'}
+                    </div>
                   </div>
 
-                  <div className={`flex-1 text-gray-400 text-sm ${view === 'list' ? 'line-clamp-1' : 'line-clamp-4 mb-4'}`}>
-                    {note.content ? note.content.replace(/<[^>]*>?/gm, '') : 'No content...'}
+                  <div className={`flex items-center justify-between mt-auto ${view === 'list' ? 'w-48' : ''}`}>
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-dark-bg text-gray-300 border border-dark-border">
+                      {note.subject?.name || 'General'}
+                    </span>
+                    <span className="text-[11px] uppercase tracking-wide px-2 py-1 rounded-full bg-primary/15 text-primary border border-primary/30">
+                      {note.section || 'notes'}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(note.updatedAt).toLocaleDateString()}
+                    </span>
                   </div>
-                </div>
 
-                <div className={`flex items-center justify-between mt-auto ${view === 'list' ? 'w-48' : ''}`}>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-dark-bg text-gray-300 border border-dark-border">
-                    {note.subject?.name || 'General'}
-                  </span>
-                  <span className="text-[11px] uppercase tracking-wide px-2 py-1 rounded-full bg-primary/15 text-primary border border-primary/30">
-                    {note.section || 'notes'}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {new Date(note.updatedAt).toLocaleDateString()}
-                  </span>
-                </div>
-
-                {note.isPinned && (
-                  <div className="absolute top-0 right-4 w-4 h-6 bg-accent opacity-20 rounded-b-sm"></div>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {filteredNotes.length === 0 && (
-            <div className="col-span-full py-20 text-center text-gray-500">
-              No notes found in this subject.
-            </div>
-          )}
-        </div>
+                  {note.isPinned && (
+                    <div className="absolute top-0 right-4 w-4 h-6 bg-accent opacity-20 rounded-b-sm"></div>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            {filteredNotes.length === 0 && (
+              <div className="col-span-full py-20 text-center text-gray-500">
+                No notes found in this subject.
+              </div>
+            )}
+          </div>
         )
       )}
 
@@ -278,7 +278,7 @@ const Notes = () => {
                 alert('Please select a PDF file to upload.');
                 return;
               }
-              
+
               setIsSubmitting(true);
               try {
                 let fileUrl = '';
@@ -313,16 +313,16 @@ const Notes = () => {
             }} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-1">Title</label>
-                <input 
+                <input
                   type="text" required
-                  value={newNote.title} onChange={e => setNewNote({...newNote, title: e.target.value})}
+                  value={newNote.title} onChange={e => setNewNote({ ...newNote, title: e.target.value })}
                   className="input-field" placeholder="Note title"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-1">Subject</label>
-                <select 
-                  required value={newNote.subject} onChange={e => setNewNote({...newNote, subject: e.target.value})}
+                <select
+                  required value={newNote.subject} onChange={e => setNewNote({ ...newNote, subject: e.target.value })}
                   className="input-field"
                 >
                   <option value="" disabled>Select a subject</option>
@@ -341,30 +341,30 @@ const Notes = () => {
               </div>
 
               <div className="flex gap-4 mb-2">
-                <button 
+                <button
                   type="button"
                   className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border ${newNote.type === 'text' ? 'bg-primary/20 border-primary text-primary' : 'border-dark-border text-gray-400 hover:border-gray-500'}`}
-                  onClick={() => setNewNote({...newNote, type: 'text'})}
+                  onClick={() => setNewNote({ ...newNote, type: 'text' })}
                 >Text Note</button>
-                <button 
+                <button
                   type="button"
                   className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border ${newNote.type === 'pdf' ? 'bg-red-500/20 border-red-500 text-red-400' : 'border-dark-border text-gray-400 hover:border-gray-500'}`}
-                  onClick={() => setNewNote({...newNote, type: 'pdf'})}
+                  onClick={() => setNewNote({ ...newNote, type: 'pdf' })}
                 >PDF Upload</button>
               </div>
 
               {newNote.type === 'text' ? (
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-1">Content (Text)</label>
-                  <textarea 
-                    required value={newNote.content} onChange={e => setNewNote({...newNote, content: e.target.value})}
+                  <textarea
+                    required value={newNote.content} onChange={e => setNewNote({ ...newNote, content: e.target.value })}
                     className="input-field h-32 resize-none" placeholder="Write your note here..."
                   ></textarea>
                 </div>
               ) : (
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-1">Upload PDF File</label>
-                  <input 
+                  <input
                     type="file" accept=".pdf" required
                     onChange={e => setSelectedFile(e.target.files[0])}
                     className="input-field py-2 bg-[#161622] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-accent"
@@ -389,7 +389,7 @@ const Notes = () => {
           <div className="glass-card w-full max-w-2xl max-h-[85vh] flex flex-col relative z-10 overflow-hidden">
             <div className="p-6 border-b border-dark-border flex justify-between items-center bg-dark-bg/50">
               <h2 className="text-2xl font-bold flex items-center gap-2">
-                <BookText className="text-primary" /> 
+                <BookText className="text-primary" />
                 {selectedNoteView.title}
               </h2>
               <button onClick={() => setSelectedNoteView(null)} className="p-2 rounded-lg hover:bg-dark-border text-gray-400 hover:text-white transition-colors">
