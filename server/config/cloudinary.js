@@ -9,7 +9,10 @@ cloudinary.config({
 });
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit for Cloudinary Free Tier
+});
 
 const uploadToCloudinary = (buffer, mimetype) => {
   return new Promise((resolve, reject) => {
