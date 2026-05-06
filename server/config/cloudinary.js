@@ -14,10 +14,18 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit for Cloudinary Free Tier
 });
 
-const uploadToCloudinary = (buffer, mimetype) => {
+const uploadToCloudinary = (buffer, mimetype, originalname) => {
   return new Promise((resolve, reject) => {
+    // Determine public_id (remove extension to let cloudinary handle it or keep it)
+    const nameWithoutExt = originalname ? originalname.split('.').slice(0, -1).join('.') : 'document';
+    
     const stream = cloudinary.uploader.upload_stream(
-      { folder: 'notevaultpro', resource_type: 'auto' },
+      { 
+        folder: 'notevaultpro', 
+        resource_type: 'auto',
+        public_id: nameWithoutExt,
+        format: mimetype === 'application/pdf' ? 'pdf' : undefined
+      },
       (error, result) => {
         if (error) {
           console.error('Cloudinary Upload Error:', error);
