@@ -20,6 +20,7 @@ import Notes from './pages/Notes';
 import SubjectDetail from './pages/SubjectDetail';
 import Analytics from './pages/Analytics';
 import AdminContact from './pages/AdminContact';
+import PdfViewer from './pages/PdfViewer';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuthStore();
@@ -33,6 +34,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/view-pdf" element={<PdfViewer />} />
         
         <Route path="/" element={<MainLayout />}>
           {/* Public Routes */}

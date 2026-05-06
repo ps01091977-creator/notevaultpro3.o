@@ -212,7 +212,7 @@ const Notes = () => {
                   className="flex flex-col flex-1 group cursor-pointer hover:border-primary/50 transition-colors"
                   onClick={() => {
                     if (note.type === 'pdf') {
-                      window.open(`${getBackendUrl()}${note.fileUrl}`, '_blank');
+                      window.open(`/view-pdf?url=${encodeURIComponent(note.fileUrl.startsWith('http') ? note.fileUrl : `${getBackendUrl()}${note.fileUrl}`)}&title=${encodeURIComponent(note.title)}`, '_blank');
                     } else {
                       setSelectedNoteView(note);
                     }
