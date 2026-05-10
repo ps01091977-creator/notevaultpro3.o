@@ -55,7 +55,7 @@ const AdminContact = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-dark-text flex items-center gap-2">
-            <Inbox className="text-primary" /> Contact Messages
+            <Inbox className="text-primary" /> Enquiries
           </h1>
           <p className="text-dark-muted text-sm mt-1">Manage inquiries and support requests from users.</p>
         </div>

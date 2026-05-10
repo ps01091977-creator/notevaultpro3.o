@@ -1,20 +1,48 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { register, isLoading, error } = useAuthStore();
+  const [otp, setOtp] = useState('');
+  const [showOtp, setShowOtp] = useState(false);
+  const [resendMsg, setResendMsg] = useState('');
+  
+  const { register, verifyOtp, resendOtp, isLoading, error } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setResendMsg('');
+    if (showOtp) {
+      try {
+        await verifyOtp(email, otp);
+        navigate('/');
+      } catch (err) {
+        // Error handled by store
+      }
+    } else {
+      try {
+        const data = await register(name, email, password);
+        if (data && data.requiresOtp) {
+          setShowOtp(true);
+        } else {
+          navigate('/');
+        }
+      } catch (err) {
+        // Error handled by store
+      }
+    }
+  };
+
+  const handleResend = async () => {
     try {
-      await register(name, email, password);
-      navigate('/');
+      await resendOtp(email);
+      setResendMsg('OTP resent successfully!');
+      setTimeout(() => setResendMsg(''), 5000);
     } catch (err) {
       // Error handled by store
     }
@@ -35,8 +63,10 @@ const Register = () => {
           <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center font-bold text-2xl text-white shadow-glow mb-4">
             NV
           </div>
-          <h2 className="text-3xl font-bold mb-2">Create Account</h2>
-          <p className="text-gray-400">Join Note Vault Pro today</p>
+          <h2 className="text-3xl font-bold mb-2">{showOtp ? 'Verify Email' : 'Create Account'}</h2>
+          <p className="text-gray-400">
+            {showOtp ? `We've sent an OTP to ${email}` : 'Join Note Vault Pro today'}
+          </p>
         </div>
 
         {error && (
@@ -44,59 +74,112 @@ const Register = () => {
             {error}
           </div>
         )}
+        
+        {resendMsg && (
+          <div className="bg-green-500/10 border border-green-500/20 text-green-400 text-sm p-3 rounded-lg mb-6 text-center">
+            {resendMsg}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1.5">Full Name</label>
-            <input
-              type="text"
-              required
-              className="input-field"
-              placeholder="John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1.5">Email Address</label>
-            <input
-              type="email"
-              required
-              autoComplete="off"
-              className="input-field"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1.5">Password</label>
-            <input
-              type="password"
-              required
-              autoComplete="new-password"
-              className="input-field"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <AnimatePresence mode="wait">
+            {!showOtp ? (
+              <motion.div 
+                key="register-form"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="space-y-5"
+              >
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1.5">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    className="input-field"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1.5">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    autoComplete="off"
+                    className="input-field"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1.5">Password</label>
+                  <input
+                    type="password"
+                    required
+                    autoComplete="new-password"
+                    className="input-field"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="otp-form"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-5"
+              >
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1.5">Enter 6-digit OTP</label>
+                  <input
+                    type="text"
+                    required
+                    maxLength="6"
+                    className="input-field text-center tracking-widest text-lg font-bold"
+                    placeholder="123456"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                  />
+                </div>
+                <div className="text-center">
+                  <button 
+                    type="button" 
+                    onClick={handleResend}
+                    disabled={isLoading}
+                    className="text-sm text-primary hover:text-primary-light transition-colors"
+                  >
+                    Resend OTP
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <button 
             type="submit" 
             disabled={isLoading}
             className="btn-primary w-full py-3 mt-4"
           >
-            {isLoading ? 'Creating Account...' : 'Sign Up'}
+            {isLoading 
+              ? (showOtp ? 'Verifying...' : 'Creating Account...') 
+              : (showOtp ? 'Verify & Login' : 'Sign Up')}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-400 mt-8">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary hover:text-primary-light font-medium transition-colors">
-            Sign In
-          </Link>
-        </p>
+        {!showOtp && (
+          <p className="text-center text-sm text-gray-400 mt-8">
+            Already have an account?{' '}
+            <Link to="/login" className="text-primary hover:text-primary-light font-medium transition-colors">
+              Sign In
+            </Link>
+          </p>
+        )}
       </motion.div>
     </div>
   );

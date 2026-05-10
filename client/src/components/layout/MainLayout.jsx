@@ -108,7 +108,7 @@ const MainLayout = () => {
   }
   
   if (user?.role === 'admin') {
-    navItems.push({ name: 'Admin Contact', path: '/admin/contact', icon: Inbox });
+    navItems.push({ name: 'Enquiries', path: '/admin/contact', icon: Inbox });
   }
 
   return (

@@ -20,6 +20,7 @@ import Notes from './pages/Notes';
 import SubjectDetail from './pages/SubjectDetail';
 import Analytics from './pages/Analytics';
 import AdminContact from './pages/AdminContact';
+import PdfViewer from './pages/PdfViewer';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuthStore();
@@ -33,17 +34,18 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/view-pdf" element={<PdfViewer />} />
         
         <Route path="/" element={<MainLayout />}>
           {/* Public Routes */}
           <Route index element={<Home />} />
-          <Route path="courses" element={<Courses />} />
-          <Route path="courses/results" element={<CourseResults />} />
           <Route path="features-services" element={<FeaturesServices />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           
           {/* Protected Routes */}
+          <Route path="courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
+          <Route path="courses/results" element={<ProtectedRoute><CourseResults /></ProtectedRoute>} />
           <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
           <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
