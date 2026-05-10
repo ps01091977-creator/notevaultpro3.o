@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+const isProduction = import.meta.env.MODE === 'production';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://notevaultpro3-o-backend.onrender.com/api',
+  baseURL: isProduction 
+    ? 'https://notevaultpro3-o-backend.onrender.com/api'
+    : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api'),
 });
 
 api.interceptors.request.use((config) => {
