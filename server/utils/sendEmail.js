@@ -1,24 +1,49 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-  // Use a default transporter or environment variables
-  const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  let transporter;
+  let isTestAccount = false;
+
+  // Use real credentials if available, otherwise generate a test account dynamically
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  } else {
+    // Dynamically create a test account on ethereal.email
+    const testAccount = await nodemailer.createTestAccount();
+    transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: testAccount.user, // generated ethereal user
+        pass: testAccount.pass, // generated ethereal password
+      },
+    });
+    isTestAccount = true;
+  }
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || 'NoteVault Pro <noreply@notevaultpro.com>',
+    from: process.env.EMAIL_FROM || '"NoteVault Pro" <noreply@notevaultpro.com>',
     to: options.email,
     subject: options.subject,
     text: options.message,
     html: options.html,
   };
 
-  await transporter.sendMail(mailOptions);
+  const info = await transporter.sendMail(mailOptions);
+
+  if (isTestAccount) {
+    console.log(`\n=== 📧 TEST EMAIL SENT 📧 ===`);
+    console.log(`To view the OTP email visually, click the link below:`);
+    console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+    console.log(`===============================\n`);
+  }
 };
 
 module.exports = sendEmail;

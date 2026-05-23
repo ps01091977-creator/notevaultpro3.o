@@ -218,11 +218,8 @@ const MainLayout = () => {
                 <NavLink to="/contact" className="text-dark-muted hover:text-primary transition-colors">Contact Us</NavLink>
                 {!user && (
                   <div className="flex items-center gap-4 ml-2 border-l border-dark-border pl-6">
-                    <button onClick={() => navigate('/login')} className="text-dark-text hover:text-primary font-bold transition-colors">
+                    <button onClick={() => navigate('/login')} className="px-6 py-2.5 rounded-full bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-glow hover:scale-105">
                       Login
-                    </button>
-                    <button onClick={() => navigate('/register')} className="px-6 py-2.5 rounded-full bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-glow hover:scale-105">
-                      Sign Up
                     </button>
                   </div>
                 )}

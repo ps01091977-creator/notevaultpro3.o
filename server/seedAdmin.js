@@ -9,18 +9,24 @@ const seedAdmin = async () => {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/notevaultpro');
     console.log('Connected to DB');
 
-    const adminExists = await User.findOne({ email: 'admin@notevaultpro.com' });
+    const adminExists = await User.findOne({ email: 'priyanshu123@gmail.com' });
 
     if (!adminExists) {
       await User.create({
         name: 'System Administrator',
-        email: 'admin@notevaultpro.com',
-        password: 'AdminPassword123!',
-        role: 'admin'
+        email: 'priyanshu123@gmail.com',
+        password: 'priyanshu@123',
+        role: 'admin',
+        isVerified: true
       });
-      console.log('✅ Admin user created successfully! (Email: admin@notevaultpro.com, Password: AdminPassword123!)');
+      console.log('✅ Admin user created successfully! (Email: priyanshu123@gmail.com, Password: priyanshu@123)');
     } else {
-      console.log('⚠️ Admin user already exists. (Email: admin@notevaultpro.com)');
+      // Ensure existing admin user has the correct email, password, role, and is verified
+      adminExists.role = 'admin';
+      adminExists.isVerified = true;
+      adminExists.password = 'priyanshu@123';
+      await adminExists.save();
+      console.log('⚠️ Admin user already exists/updated. (Email: priyanshu123@gmail.com, Password: priyanshu@123)');
     }
   } catch (error) {
     console.error('Error seeding admin:', error);       
@@ -33,8 +39,6 @@ seedAdmin();
 
 /*
 
-admin@notevaultpro.com
-
-run the 
+priyanshu123@gmail.com
 
 */

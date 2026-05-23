@@ -46,13 +46,13 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1.5">Email Address</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1.5">User ID</label>
             <input
-              type="email"
+              type="text"
               required
               autoComplete="off"
               className="input-field"
-              placeholder="you@example.com"
+              placeholder="e.g. 243601 or admin"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -60,7 +60,6 @@ const Login = () => {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-sm font-medium text-gray-400">Password</label>
-              <a href="#" className="text-xs text-primary hover:text-primary-light transition-colors">Forgot password?</a>
             </div>
             <input
               type="password"
@@ -81,13 +80,6 @@ const Login = () => {
             {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
-
-        <p className="text-center text-sm text-gray-400 mt-8">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-primary hover:text-primary-light font-medium transition-colors">
-            Create account
-          </Link>
-        </p>
       </motion.div>
     </div>
   );

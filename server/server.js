@@ -19,7 +19,7 @@ app.use(express.json());
 
 // Enable CORS
 app.use(cors({
-  origin: /\.vercel\.app$/,
+  origin: [/\.vercel\.app$/, /localhost:/, /\.loca\.lt$/],
   credentials: true
 }));
 
