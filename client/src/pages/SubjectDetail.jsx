@@ -113,6 +113,33 @@ const SubjectDetail = () => {
     }
   };
 
+  const handleDeleteNote = async (e, noteId) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this note?')) {
+      try {
+        await api.delete(`/notes/${noteId}`);
+        setNotes(notes.filter(n => n._id !== noteId));
+      } catch (error) {
+        console.error(error);
+        alert('Failed to delete note');
+      }
+    }
+  };
+
+  const handleDeleteVideo = async (e, videoId) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this video?')) {
+      try {
+        await api.delete(`/videos/${videoId}`);
+        setVideos(videos.filter(v => v._id !== videoId));
+      } catch (error) {
+        console.error(error);
+        alert('Failed to delete video');
+      }
+    }
+  };
+
+
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!activeFolder) return;
@@ -325,7 +352,7 @@ const SubjectDetail = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       key={note._id}
-                      className="glass-card p-5 flex flex-col group cursor-pointer hover:border-primary/50"
+                      className="glass-card p-5 flex flex-col group cursor-pointer hover:border-primary/50 relative"
                       style={{ borderTop: `4px solid ${note.color || '#7c3aed'}` }}
                       onClick={() => {
                         if (note.type === 'pdf') {
@@ -336,7 +363,15 @@ const SubjectDetail = () => {
                         }
                       }}
                     >
-                      <div className="flex items-center gap-3 mb-3">
+                      {user?.role === 'admin' && (
+                        <button
+                          onClick={(e) => handleDeleteNote(e, note._id)}
+                          className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-dark-border opacity-0 group-hover:opacity-100 transition-all z-10"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                      <div className="flex items-center gap-3 mb-3 pr-8">
                         <div className="p-2 rounded-lg bg-dark-bg border border-dark-border">
                           {note.type === 'pdf' ? <FileText className="text-red-400" size={20} /> : <BookText className="text-primary" size={20} />}
                         </div>
@@ -367,9 +402,17 @@ const SubjectDetail = () => {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       key={video._id}
-                      className="glass-card overflow-hidden group cursor-pointer hover:-translate-y-1 transition-all"
+                      className="glass-card overflow-hidden group cursor-pointer hover:-translate-y-1 transition-all relative"
                       onClick={() => setSelectedVideo(video)}
                     >
+                      {user?.role === 'admin' && (
+                        <button
+                          onClick={(e) => handleDeleteVideo(e, video._id)}
+                          className="absolute top-3 right-3 p-1.5 text-gray-200 bg-black/60 hover:text-red-400 hover:bg-black/80 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-20"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                       <div className="relative aspect-video bg-gray-800">
                         <img 
                           src={video.thumbnail || "https://images.unsplash.com/photo-1610484826967-09c5720778c7?w=800&q=80"} 
