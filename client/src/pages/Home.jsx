@@ -379,34 +379,34 @@ const Home = () => {
       </section>
 
       {/* ----------------- INTERACTIVE GPA TARGET PLANNER & RECOMMENDER ----------------- */}
-      <section className="max-w-[1400px] mx-auto w-full px-4 md:px-8 py-10">
-        <div className="relative rounded-[30px] md:rounded-[40px] overflow-hidden bg-dark-card border border-dark-border p-8 sm:p-12 md:p-16 shadow-[0_0_50px_rgba(124,58,237,0.1)]">
+      <section className="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-8 md:py-12">
+        <div className="relative rounded-[24px] md:rounded-[40px] overflow-hidden bg-dark-card border border-dark-border p-5 sm:p-10 md:p-14 shadow-[0_0_50px_rgba(124,58,237,0.1)]">
           {/* Decorative Glowing Orbs */}
           <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
           <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-accent/10 blur-[100px] rounded-full pointer-events-none"></div>
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay pointer-events-none"></div>
 
-          <div className="relative z-10 flex flex-col lg:flex-row gap-12 items-stretch">
+          <div className="relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch">
             {/* Left Column: Sliders & Controls */}
-            <div className="flex-1 space-y-8">
+            <div className="flex-1 space-y-6 md:space-y-8">
               <div>
                 <span className="text-primary font-bold tracking-widest uppercase text-xs">Dynamic Grade Assistant</span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2 leading-tight">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mt-1 leading-tight">
                   GPA Target Planner
                 </h2>
-                <p className="text-dark-muted mt-2 text-sm sm:text-base">
+                <p className="text-dark-muted mt-2 text-xs sm:text-sm md:text-base leading-relaxed">
                   Set your targets, select your hours, and let NoteVault Pro map out your exam prep strategy!
                 </p>
               </div>
 
-              <div className="space-y-6 bg-dark-bg/40 border border-dark-border/60 p-6 rounded-2xl">
+              <div className="space-y-5 md:space-y-6 bg-dark-bg/40 border border-dark-border/60 p-4 sm:p-6 rounded-2xl">
                 {/* Branch Selection */}
                 <div>
-                  <label className="block text-sm font-semibold text-dark-text mb-2">Select Your Branch</label>
+                  <label className="block text-xs sm:text-sm font-semibold text-dark-text mb-2">Select Your Branch</label>
                   <select 
                     value={gpaInputs.branch}
                     onChange={(e) => setGpaInputs({ ...gpaInputs, branch: e.target.value })}
-                    className="w-full bg-dark-bg border border-dark-border px-4 py-3 rounded-xl text-dark-text focus:border-primary/50 transition-all font-medium"
+                    className="w-full bg-dark-bg border border-dark-border px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl text-dark-text focus:border-primary/50 transition-all font-medium text-xs sm:text-sm"
                   >
                     <option value="Computer Science">Computer Science & Engineering</option>
                     <option value="Information Technology">Information Technology</option>
@@ -419,9 +419,9 @@ const Home = () => {
 
                 {/* Current GPA Slider */}
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-dark-text">Current CGPA</span>
-                    <span className="text-primary font-bold text-base px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">{gpaInputs.current.toFixed(1)}</span>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-xs sm:text-sm font-semibold text-dark-text">Current CGPA</span>
+                    <span className="text-primary font-bold text-xs sm:text-sm px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">{gpaInputs.current.toFixed(1)}</span>
                   </div>
                   <input 
                     type="range" 
@@ -443,13 +443,13 @@ const Home = () => {
 
                 {/* Target GPA Slider */}
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-dark-text">Target CGPA</span>
-                    <span className="text-accent font-bold text-base px-2.5 py-0.5 rounded-full bg-accent/10 border border-accent/20">{gpaInputs.target.toFixed(1)}</span>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-xs sm:text-sm font-semibold text-dark-text">Target CGPA</span>
+                    <span className="text-accent font-bold text-xs sm:text-sm px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20">{gpaInputs.target.toFixed(1)}</span>
                   </div>
                   <input 
                     type="range" 
-                    min={gpaInputs.current.toFixed(1)} 
+                    min={gpaInputs.current} 
                     max="10.0" 
                     step="0.1"
                     value={gpaInputs.target}
@@ -460,9 +460,9 @@ const Home = () => {
 
                 {/* Daily Study Time Slider */}
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-dark-text">Daily Study Time</span>
-                    <span className="text-emerald-400 font-bold text-base px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-xs sm:text-sm font-semibold text-dark-text">Daily Study Time</span>
+                    <span className="text-emerald-400 font-bold text-xs sm:text-sm px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                       {gpaInputs.studyHours === 6 ? '6+ Hours' : `${gpaInputs.studyHours} Hours`}
                     </span>
                   </div>
@@ -480,23 +480,23 @@ const Home = () => {
             </div>
 
             {/* Right Column: Recommendation & Output Card */}
-            <div className="flex-1 flex flex-col justify-between bg-dark-bg/60 border border-dark-border rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+            <div className="flex-1 flex flex-col justify-between bg-dark-bg/60 border border-dark-border rounded-3xl p-5 sm:p-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-xl"></div>
               
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b border-dark-border pb-4">
-                  <h4 className="text-lg font-bold text-white flex items-center gap-2">
+                  <h4 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                     <Zap size={18} className="text-yellow-400 fill-yellow-400" />
                     Target Success Strategy
                   </h4>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-dark-muted font-medium">
+                  <span className="text-[10px] sm:text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-dark-muted font-medium">
                     Plan Generated
                   </span>
                 </div>
 
                 {/* Target Score Meter */}
-                <div className="flex items-center gap-6 bg-dark-card border border-dark-border p-5 rounded-2xl">
-                  <div className="relative w-20 h-20 rounded-full bg-dark-bg border-4 border-primary/20 flex items-center justify-center shadow-inner">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 bg-dark-card border border-dark-border p-4 sm:p-5 rounded-2xl text-center sm:text-left">
+                  <div className="relative w-20 h-20 rounded-full bg-dark-bg border-4 border-primary/20 flex items-center justify-center shadow-inner shrink-0">
                     <div className="text-center">
                       <span className="text-2xl font-black text-white">
                         {gpaInputs.target > gpaInputs.current 
@@ -508,7 +508,7 @@ const Home = () => {
                     {/* Ring Glow */}
                     <div className="absolute inset-0 rounded-full border-2 border-primary animate-pulse opacity-40"></div>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h5 className="font-bold text-dark-text text-base sm:text-lg">Target Grade Distribution</h5>
                     <p className="text-xs sm:text-sm text-dark-muted mt-1 leading-relaxed">
                       {gpaInputs.target >= 9.0 
@@ -523,12 +523,12 @@ const Home = () => {
 
                 {/* Custom Recommendation */}
                 <div className="space-y-3">
-                  <h5 className="text-xs font-bold uppercase tracking-wider text-dark-muted">NoteVault Pro Smart Tips</h5>
-                  <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex gap-4">
+                  <h5 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-dark-muted">NoteVault Pro Smart Tips</h5>
+                  <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex gap-3 sm:gap-4">
                     <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                       <BookOpen size={16} />
                     </div>
-                    <div className="flex-1 text-sm text-dark-text leading-relaxed">
+                    <div className="flex-1 text-xs sm:text-sm text-dark-text leading-relaxed">
                       {gpaInputs.studyHours <= 2 ? (
                         <span>
                           <strong>⚡ Tight Schedule Action Plan:</strong> Focus on our targeted, ad-free <strong>Video Lectures</strong> and structured quick-revision <strong>Notes</strong>. It will maximize your score in minimal time!
@@ -541,11 +541,11 @@ const Home = () => {
                     </div>
                   </div>
                   
-                  <div className="bg-accent/5 border border-accent/10 rounded-2xl p-4 flex gap-4">
+                  <div className="bg-accent/5 border border-accent/10 rounded-2xl p-4 flex gap-3 sm:gap-4">
                     <div className="shrink-0 w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-accent">
                       <GraduationCap size={16} />
                     </div>
-                    <div className="flex-1 text-sm text-dark-text leading-relaxed">
+                    <div className="flex-1 text-xs sm:text-sm text-dark-text leading-relaxed">
                       Curated curriculum dynamically mapped for <strong>{gpaInputs.branch}</strong> students.
                     </div>
                   </div>
@@ -556,7 +556,7 @@ const Home = () => {
               <div className="pt-6 mt-8 border-t border-dark-border">
                 <button
                   onClick={() => navigate('/courses')}
-                  className="w-full group relative inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-black font-bold rounded-2xl text-base sm:text-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(124,58,237,0.4)]"
+                  className="w-full group relative inline-flex items-center justify-center gap-3 px-6 py-3.5 sm:py-4 bg-white text-black font-bold rounded-2xl text-sm sm:text-base md:text-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(124,58,237,0.4)]"
                 >
                   Access Target Plan Materials
                   <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform text-black" />
