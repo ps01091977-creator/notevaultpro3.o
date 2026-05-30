@@ -40,17 +40,17 @@ function App() {
           <Route path="features-services" element={<FeaturesServices />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="courses" element={<Courses />} />
+          <Route path="course/:courseId/semesters" element={<SemestersList />} />
+          <Route path="course/:courseId/semesters/:semester/subjects" element={<SubjectsList />} />
           
           {/* Protected Routes */}
-          <Route path="courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
           <Route path="courses/results" element={<ProtectedRoute><CourseResults /></ProtectedRoute>} />
           <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
           <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
           <Route path="admin/contact" element={<ProtectedRoute><AdminContact /></ProtectedRoute>} />
           <Route path="subjects/:id" element={<ProtectedRoute><SubjectDetail /></ProtectedRoute>} />
-          <Route path="course/:courseId/semesters" element={<ProtectedRoute><SemestersList /></ProtectedRoute>} />
-          <Route path="course/:courseId/semesters/:semester/subjects" element={<ProtectedRoute><SubjectsList /></ProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

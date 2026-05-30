@@ -445,6 +445,18 @@ const Courses = () => {
                       💡 Tip: Double-click a subject to instantly open results!
                     </p>
                   )}
+                  
+                  {selectedSubject && (
+                    <div className="flex justify-center mt-6">
+                      <button
+                        onClick={openResults}
+                        className="px-8 py-3.5 rounded-full bg-primary hover:bg-primary/90 text-white font-bold text-lg flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-glow"
+                      >
+                        <Zap size={20} />
+                        View Uploaded Content
+                      </button>
+                    </div>
+                  )}
                   </>
                 )}
                 

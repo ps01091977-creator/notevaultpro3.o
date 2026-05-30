@@ -8,12 +8,24 @@ const sendEmail = require('../utils/sendEmail');
 const createMessage = async (req, res, next) => {
   try {
     const { name, email, subject, message } = req.body;
+
+    // Validate fields
+    if (!name || !name.trim() || !email || !email.trim() || !subject || !subject.trim() || !message || !message.trim()) {
+      res.status(400);
+      throw new Error('All fields (name, email, subject, message) are required');
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400);
+      throw new Error('Please provide a valid email address');
+    }
     
     const contactMessage = await ContactMessage.create({
-      name,
-      email,
-      subject,
-      message
+      name: name.trim(),
+      email: email.trim(),
+      subject: subject.trim(),
+      message: message.trim()
     });
 
     // Notify admins

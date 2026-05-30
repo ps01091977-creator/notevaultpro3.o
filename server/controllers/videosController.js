@@ -104,7 +104,7 @@ const updateVideo = async (req, res, next) => {
       throw new Error('Video not found');
     }
 
-    if (video.owner.toString() !== req.user._id.toString()) {
+    if (video.owner && video.owner.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       res.status(401);
       throw new Error('User not authorized');
     }
@@ -133,7 +133,7 @@ const deleteVideo = async (req, res, next) => {
       throw new Error('Video not found');
     }
 
-    if (video.owner.toString() !== req.user._id.toString()) {
+    if (video.owner && video.owner.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       res.status(401);
       throw new Error('User not authorized');
     }

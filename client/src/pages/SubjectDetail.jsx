@@ -366,7 +366,7 @@ const SubjectDetail = () => {
                       {user?.role === 'admin' && (
                         <button
                           onClick={(e) => handleDeleteNote(e, note._id)}
-                          className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-dark-border opacity-0 group-hover:opacity-100 transition-all z-10"
+                          className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-dark-border bg-dark-bg/85 border border-dark-border shadow-md transition-all z-10"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -408,7 +408,7 @@ const SubjectDetail = () => {
                       {user?.role === 'admin' && (
                         <button
                           onClick={(e) => handleDeleteVideo(e, video._id)}
-                          className="absolute top-3 right-3 p-1.5 text-gray-200 bg-black/60 hover:text-red-400 hover:bg-black/80 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-20"
+                          className="absolute top-3 right-3 p-1.5 text-gray-200 bg-black/70 hover:text-red-400 hover:bg-black/90 rounded-lg border border-white/10 shadow-md transition-all z-20"
                         >
                           <Trash2 size={16} />
                         </button>

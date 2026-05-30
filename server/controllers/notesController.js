@@ -79,7 +79,7 @@ const updateNote = async (req, res, next) => {
       throw new Error('Note not found');
     }
 
-    if (note.owner.toString() !== req.user._id.toString()) {
+    if (note.owner && note.owner.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       res.status(401);
       throw new Error('User not authorized');
     }
@@ -108,7 +108,7 @@ const deleteNote = async (req, res, next) => {
       throw new Error('Note not found');
     }
 
-    if (note.owner.toString() !== req.user._id.toString()) {
+    if (note.owner && note.owner.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       res.status(401);
       throw new Error('User not authorized');
     }
@@ -132,7 +132,7 @@ const togglePinNote = async (req, res, next) => {
       throw new Error('Note not found');
     }
 
-    if (note.owner.toString() !== req.user._id.toString()) {
+    if (note.owner && note.owner.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       res.status(401);
       throw new Error('User not authorized');
     }

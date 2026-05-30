@@ -6,17 +6,24 @@ import api from '../api/axios';
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSent, setIsSent] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSending(true);
+    setError('');
     try {
       await api.post('/contact', formData);
       setIsSent(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
-      setTimeout(() => setIsSent(false), 5000);
-    } catch (error) {
-      console.error(error);
-      alert('Failed to send message. Please try again later.');
+      setTimeout(() => setIsSent(false), 6000);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Failed to send message. Please try again later.');
+      setTimeout(() => setError(''), 6000);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -132,15 +139,26 @@ const Contact = () => {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl p-4 text-sm font-medium"
+                  >
+                    {error}
+                  </motion.div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-dark-text ml-1">Your Name</label>
                     <input 
                       type="text" 
                       required
+                      disabled={isSending}
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="input-field" 
+                      className="input-field disabled:opacity-50" 
                       placeholder="John Doe" 
                     />
                   </div>
@@ -149,9 +167,10 @@ const Contact = () => {
                     <input 
                       type="email" 
                       required
+                      disabled={isSending}
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="input-field" 
+                      className="input-field disabled:opacity-50" 
                       placeholder="john@example.com" 
                     />
                   </div>
@@ -162,9 +181,10 @@ const Contact = () => {
                   <input 
                     type="text" 
                     required
+                    disabled={isSending}
                     value={formData.subject}
                     onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                    className="input-field" 
+                    className="input-field disabled:opacity-50" 
                     placeholder="How can we help you?" 
                   />
                 </div>
@@ -174,15 +194,29 @@ const Contact = () => {
                   <textarea 
                     required
                     rows="5"
+                    disabled={isSending}
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    className="input-field resize-none" 
+                    className="input-field resize-none disabled:opacity-50" 
                     placeholder="Write your message here..."
                   ></textarea>
                 </div>
 
-                <button type="submit" className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-2">
-                  Send Message <Send size={20} />
+                <button 
+                  type="submit" 
+                  disabled={isSending}
+                  className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  {isSending ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Sending Message...
+                    </>
+                  ) : (
+                    <>
+                      Send Message <Send size={20} />
+                    </>
+                  )}
                 </button>
               </form>
             )}

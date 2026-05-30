@@ -224,7 +224,7 @@ const Notes = () => {
                         <h3 className="font-bold text-lg truncate max-w-[200px]">{note.title}</h3>
                       </div>
                       {user?.role === 'admin' && (
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-1 bg-dark-bg/80 border border-dark-border rounded-lg p-0.5 shadow-md" onClick={e => e.stopPropagation()}>
                           <button onClick={() => handlePin(note._id)} className={`p-1.5 rounded-md hover:bg-dark-border ${note.isPinned ? 'text-accent' : 'text-gray-400'}`}>
                             <Pin size={16} />
                           </button>

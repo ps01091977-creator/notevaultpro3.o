@@ -154,6 +154,25 @@ const CourseResults = () => {
     }
   };
 
+  const handleDeleteItem = async (e, item) => {
+    e.stopPropagation();
+    const isVideo = material === 'Video Lectures';
+    const itemType = isVideo ? 'video lecture' : 'document';
+    if (window.confirm(`Are you sure you want to delete this ${itemType}?`)) {
+      try {
+        const endpoint = isVideo ? `/videos/${item._id}` : `/notes/${item._id}`;
+        await api.delete(endpoint);
+        setItems(items.filter(i => i._id !== item._id));
+        if (isVideo && selectedVideo?._id === item._id) {
+          setSelectedVideo(null);
+        }
+      } catch (error) {
+        console.error(error);
+        alert(`Failed to delete ${itemType}`);
+      }
+    }
+  };
+
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!subjectId || !activeFolder) return;
@@ -415,7 +434,17 @@ const CourseResults = () => {
                 if (material === 'Video Lectures') {
                   const isPlaying = selectedVideo?._id === item._id;
                   return (
-                    <div key={item._id} className={`bg-dark-card overflow-hidden border transition-all duration-300 group ${isPlaying ? 'border-primary shadow-[0_0_20px_rgba(124,58,237,0.15)] scale-[1.02]' : 'border-dark-border hover:border-primary/50 hover:-translate-y-1'} ${view === 'list' ? 'flex flex-col sm:flex-row rounded-xl h-auto sm:h-48' : 'flex flex-col rounded-[20px]'}`}>
+                    <div key={item._id} className={`bg-dark-card overflow-hidden border transition-all duration-300 group ${isPlaying ? 'border-primary shadow-[0_0_20px_rgba(124,58,237,0.15)] scale-[1.02]' : 'border-dark-border hover:border-primary/50 hover:-translate-y-1'} ${view === 'list' ? 'flex flex-col sm:flex-row rounded-xl h-auto sm:h-48' : 'flex flex-col rounded-[20px]'} relative`}>
+                      {/* Trash Button for Admin */}
+                      {user?.role === 'admin' && (
+                        <button
+                          onClick={(e) => handleDeleteItem(e, item)}
+                          className="absolute top-3 right-3 p-1.5 text-gray-200 bg-black/70 hover:text-red-400 hover:bg-black/90 rounded-lg border border-white/10 shadow-md transition-all z-20"
+                          title="Delete Video"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                       {/* Thumbnail Area */}
                       <div className={`relative bg-black overflow-hidden shrink-0 ${view === 'list' ? 'w-full sm:w-72 sm:h-full aspect-video sm:aspect-auto' : 'aspect-video w-full'}`}>
                         <img src={getThumbnail(item)} alt={item.title} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-transform duration-500 group-hover:scale-105" />
@@ -431,7 +460,7 @@ const CourseResults = () => {
                         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay pointer-events-none"></div>
                         <div className="relative z-10 flex flex-col h-full">
                           <div className="flex justify-between items-start gap-2 mb-2">
-                            <h3 className="text-lg font-bold text-dark-text line-clamp-1 flex-1">{item.title}</h3>
+                            <h3 className="text-lg font-bold text-dark-text line-clamp-1 flex-1 pr-6">{item.title}</h3>
                             <div className="flex items-center gap-1 text-accent shrink-0">
                               {[1, 2, 3, 4, 5].map(star => <svg key={star} className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>)}
                               <span className="text-xs text-dark-muted ml-1 font-medium">4.9/5</span>
@@ -471,8 +500,17 @@ const CourseResults = () => {
                 
                 // For Notes, PYQs, etc.
                 return (
-                  <div key={item._id} className="glass-card p-5 border border-dark-border rounded-xl">
-                    <h3 className="font-semibold mb-3 text-dark-text">{item.title}</h3>
+                  <div key={item._id} className="glass-card p-5 border border-dark-border rounded-xl relative group">
+                    {user?.role === 'admin' && (
+                      <button
+                        onClick={(e) => handleDeleteItem(e, item)}
+                        className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-dark-border bg-dark-bg/85 border border-dark-border shadow-md transition-all z-10"
+                        title="Delete Content"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                    <h3 className="font-semibold mb-3 text-dark-text pr-8">{item.title}</h3>
                     {item.type === 'pdf' ? (
                     <div className="flex gap-2">
                       <a href={`/view-pdf?url=${encodeURIComponent(item.fileUrl.startsWith('http') ? item.fileUrl : `${getBackendUrl()}${item.fileUrl}`)}&title=${encodeURIComponent(item.title)}`} target="_blank" rel="noreferrer" className="btn-secondary flex items-center gap-2 border border-dark-border">

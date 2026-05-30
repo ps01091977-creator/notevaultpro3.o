@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   PlayCircle, BookOpen, Star, Users, CheckCircle, Globe,
   AtSign, Heart, ArrowUp, Map, ChevronRight, Zap, Award,
-  TrendingUp, Download, Monitor, MessageSquare
+  TrendingUp, Download, Monitor, MessageSquare, GraduationCap
 } from 'lucide-react';
 import { FaInstagram, FaLinkedin, FaYoutube, FaGithub } from 'react-icons/fa';
 import api from '../api/axios';
@@ -17,7 +17,7 @@ const IconMap = {
 const Home = () => {
   const navigate = useNavigate();
   const { settings } = useSettingsStore();
-  const [courses, setCourses] = React.useState([]);
+  const [courses, setCourses] = useState([]);
   const [hoveredFeature, setHoveredFeature] = useState(null);
   const [globalStats, setGlobalStats] = useState({
     activeStudents: 0,
@@ -26,7 +26,14 @@ const Home = () => {
     averageRating: '4.9/5'
   });
 
-  React.useEffect(() => {
+  const [gpaInputs, setGpaInputs] = useState({
+    current: 7.0,
+    target: 8.5,
+    branch: 'Computer Science',
+    studyHours: 2
+  });
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const { data: coursesData } = await api.get('/courses');
@@ -371,19 +378,191 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ----------------- CTA SECTION ----------------- */}
+      {/* ----------------- INTERACTIVE GPA TARGET PLANNER & RECOMMENDER ----------------- */}
       <section className="max-w-[1400px] mx-auto w-full px-4 md:px-8 py-10">
-        <div className="relative rounded-[30px] md:rounded-[40px] overflow-hidden bg-gradient-to-r from-primary/90 to-purple-600 p-8 sm:p-12 md:p-20 text-center">
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
-          <div className="relative z-10 max-w-3xl mx-auto space-y-6 md:space-y-8">
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-white leading-tight">Ready to boost your grades?</h2>
-            <p className="text-base sm:text-xl text-white/80">Join 10,000+ students who are already learning smarter and scoring higher with Note Vault Pro.</p>
-            <button
-              onClick={() => navigate('/register')}
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 md:px-10 md:py-5 bg-white text-black rounded-full font-bold text-lg md:text-xl hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.3)] mt-2"
-            >
-              Get Started for Free <ChevronRight size={24} />
-            </button>
+        <div className="relative rounded-[30px] md:rounded-[40px] overflow-hidden bg-dark-card border border-dark-border p-8 sm:p-12 md:p-16 shadow-[0_0_50px_rgba(124,58,237,0.1)]">
+          {/* Decorative Glowing Orbs */}
+          <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-accent/10 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay pointer-events-none"></div>
+
+          <div className="relative z-10 flex flex-col lg:flex-row gap-12 items-stretch">
+            {/* Left Column: Sliders & Controls */}
+            <div className="flex-1 space-y-8">
+              <div>
+                <span className="text-primary font-bold tracking-widest uppercase text-xs">Dynamic Grade Assistant</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2 leading-tight">
+                  GPA Target Planner
+                </h2>
+                <p className="text-dark-muted mt-2 text-sm sm:text-base">
+                  Set your targets, select your hours, and let NoteVault Pro map out your exam prep strategy!
+                </p>
+              </div>
+
+              <div className="space-y-6 bg-dark-bg/40 border border-dark-border/60 p-6 rounded-2xl">
+                {/* Branch Selection */}
+                <div>
+                  <label className="block text-sm font-semibold text-dark-text mb-2">Select Your Branch</label>
+                  <select 
+                    value={gpaInputs.branch}
+                    onChange={(e) => setGpaInputs({ ...gpaInputs, branch: e.target.value })}
+                    className="w-full bg-dark-bg border border-dark-border px-4 py-3 rounded-xl text-dark-text focus:border-primary/50 transition-all font-medium"
+                  >
+                    <option value="Computer Science">Computer Science & Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Electronics & Communication">Electronics & Communication</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Electrical Engineering">Electrical Engineering</option>
+                  </select>
+                </div>
+
+                {/* Current GPA Slider */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-semibold text-dark-text">Current CGPA</span>
+                    <span className="text-primary font-bold text-base px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">{gpaInputs.current.toFixed(1)}</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="4.0" 
+                    max="10.0" 
+                    step="0.1"
+                    value={gpaInputs.current}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      setGpaInputs({ 
+                        ...gpaInputs, 
+                        current: val,
+                        target: Math.max(val, gpaInputs.target)
+                      });
+                    }}
+                    className="w-full h-1.5 bg-dark-bg rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                </div>
+
+                {/* Target GPA Slider */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-semibold text-dark-text">Target CGPA</span>
+                    <span className="text-accent font-bold text-base px-2.5 py-0.5 rounded-full bg-accent/10 border border-accent/20">{gpaInputs.target.toFixed(1)}</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min={gpaInputs.current.toFixed(1)} 
+                    max="10.0" 
+                    step="0.1"
+                    value={gpaInputs.target}
+                    onChange={(e) => setGpaInputs({ ...gpaInputs, target: parseFloat(e.target.value) })}
+                    className="w-full h-1.5 bg-dark-bg rounded-lg appearance-none cursor-pointer accent-accent"
+                  />
+                </div>
+
+                {/* Daily Study Time Slider */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-semibold text-dark-text">Daily Study Time</span>
+                    <span className="text-emerald-400 font-bold text-base px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                      {gpaInputs.studyHours === 6 ? '6+ Hours' : `${gpaInputs.studyHours} Hours`}
+                    </span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="1" 
+                    max="6" 
+                    step="1"
+                    value={gpaInputs.studyHours}
+                    onChange={(e) => setGpaInputs({ ...gpaInputs, studyHours: parseInt(e.target.value) })}
+                    className="w-full h-1.5 bg-dark-bg rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Recommendation & Output Card */}
+            <div className="flex-1 flex flex-col justify-between bg-dark-bg/60 border border-dark-border rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-xl"></div>
+              
+              <div className="space-y-6">
+                <div className="flex items-center justify-between border-b border-dark-border pb-4">
+                  <h4 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Zap size={18} className="text-yellow-400 fill-yellow-400" />
+                    Target Success Strategy
+                  </h4>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-dark-muted font-medium">
+                    Plan Generated
+                  </span>
+                </div>
+
+                {/* Target Score Meter */}
+                <div className="flex items-center gap-6 bg-dark-card border border-dark-border p-5 rounded-2xl">
+                  <div className="relative w-20 h-20 rounded-full bg-dark-bg border-4 border-primary/20 flex items-center justify-center shadow-inner">
+                    <div className="text-center">
+                      <span className="text-2xl font-black text-white">
+                        {gpaInputs.target > gpaInputs.current 
+                          ? `+${((gpaInputs.target - gpaInputs.current) * 10).toFixed(0)}` 
+                          : '0'}
+                      </span>
+                      <p className="text-[10px] text-dark-muted uppercase font-bold tracking-wider">Points</p>
+                    </div>
+                    {/* Ring Glow */}
+                    <div className="absolute inset-0 rounded-full border-2 border-primary animate-pulse opacity-40"></div>
+                  </div>
+                  <div>
+                    <h5 className="font-bold text-dark-text text-base sm:text-lg">Target Grade Distribution</h5>
+                    <p className="text-xs sm:text-sm text-dark-muted mt-1 leading-relaxed">
+                      {gpaInputs.target >= 9.0 
+                        ? "To score 9.0+ SGPA, aim for at least 4 'O (Outstanding)' and 2 'A+' grades!"
+                        : gpaInputs.target >= 8.0 
+                        ? "To score 8.0+ SGPA, aim for at least 3 'A+' and 3 'A' grades!"
+                        : "To reach your target, maintain a steady 'A' and 'B+' average across all papers."
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* Custom Recommendation */}
+                <div className="space-y-3">
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-dark-muted">NoteVault Pro Smart Tips</h5>
+                  <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex gap-4">
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <BookOpen size={16} />
+                    </div>
+                    <div className="flex-1 text-sm text-dark-text leading-relaxed">
+                      {gpaInputs.studyHours <= 2 ? (
+                        <span>
+                          <strong>⚡ Tight Schedule Action Plan:</strong> Focus on our targeted, ad-free <strong>Video Lectures</strong> and structured quick-revision <strong>Notes</strong>. It will maximize your score in minimal time!
+                        </span>
+                      ) : (
+                        <span>
+                          <strong>📚 Academic Mastery Plan:</strong> Utilize our comprehensive handwritten <strong>Notes</strong>, verified <strong>PYQs</strong>, and <strong>Quantum Series Solutions</strong>. Covering Unit 3 & 4 first will guarantee top grades!
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-accent/5 border border-accent/10 rounded-2xl p-4 flex gap-4">
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                      <GraduationCap size={16} />
+                    </div>
+                    <div className="flex-1 text-sm text-dark-text leading-relaxed">
+                      Curated curriculum dynamically mapped for <strong>{gpaInputs.branch}</strong> students.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="pt-6 mt-8 border-t border-dark-border">
+                <button
+                  onClick={() => navigate('/courses')}
+                  className="w-full group relative inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-black font-bold rounded-2xl text-base sm:text-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(124,58,237,0.4)]"
+                >
+                  Access Target Plan Materials
+                  <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform text-black" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
