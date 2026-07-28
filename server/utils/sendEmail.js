@@ -7,7 +7,9 @@ const sendEmail = async (options) => {
   // Use real credentials if available, otherwise generate a test account dynamically
   if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
     transporter = nodemailer.createTransport({
-      service: process.env.EMAIL_SERVICE || 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, // Use SSL/TLS for standard SMTP port 465
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -28,8 +30,12 @@ const sendEmail = async (options) => {
     isTestAccount = true;
   }
 
+  // Force from address to align with EMAIL_USER to pass spam filters (SPF/DKIM alignment)
+  const fromName = 'NoteVault Pro';
+  const fromEmail = isTestAccount ? (process.env.EMAIL_FROM || 'noreply@notevaultpro.com') : process.env.EMAIL_USER;
+
   const mailOptions = {
-    from: process.env.EMAIL_FROM || '"NoteVault Pro" <noreply@notevaultpro.com>',
+    from: `"${fromName}" <${fromEmail}>`,
     to: options.email,
     subject: options.subject,
     text: options.message,

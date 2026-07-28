@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Notification = require('../models/Notification');
 const generateToken = require('../utils/generateToken');
 const sendEmail = require('../utils/sendEmail');
+const { verifyFirebaseToken } = require('../utils/firebaseAuth');
 
 // Generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -30,6 +31,9 @@ const registerUser = async (req, res, next) => {
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    console.log(`\n=============================================`);
+    console.log(`🔑 [OTP VERIFICATION] OTP for ${user.email} is: ${otp}`);
+    console.log(`=============================================\n`);
 
     await user.save();
 
@@ -134,6 +138,9 @@ const resendOtp = async (req, res, next) => {
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    console.log(`\n=============================================`);
+    console.log(`🔑 [OTP VERIFICATION] Resent OTP for ${user.email} is: ${otp}`);
+    console.log(`=============================================\n`);
     await user.save();
 
     try {
@@ -223,4 +230,86 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, verifyOtp, resendOtp, loginUser, getUserProfile };
+// @desc    Firebase Auth (Google Sign-In)
+// @route   POST /api/auth/firebase-login
+// @access  Public
+const firebaseLogin = async (req, res, next) => {
+  try {
+    const { idToken } = req.body;
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+
+    // Verify token
+    const decodedToken = await verifyFirebaseToken(idToken, projectId);
+
+    const { email, name, picture } = decodedToken;
+
+    if (!email) {
+      res.status(400);
+      throw new Error('Email not provided by Google account');
+    }
+
+    // Find user in MongoDB
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if not exists
+      const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-8);
+      user = new User({
+        name: name || 'Google User',
+        email: email,
+        password: randomPassword,
+        avatar: picture || '',
+        role: 'user',
+        isVerified: true
+      });
+      await user.save();
+
+      // Notify admins of new registration
+      await Notification.create({
+        isGlobal: false,
+        isAdminOnly: true,
+        title: 'New User Registration (Google)',
+        message: `${user.name} (${user.email}) has signed up via Google.`,
+        type: 'signup'
+      });
+    } else {
+      // If user exists, update their avatar if they don't have one and we got one
+      let updated = false;
+      if (!user.avatar && picture) {
+        user.avatar = picture;
+        updated = true;
+      }
+      if (user.isVerified === false) {
+        user.isVerified = true;
+        updated = true;
+      }
+      if (updated) {
+        await user.save();
+      }
+
+      // Notify admins of login
+      if (user.role !== 'admin') {
+        await Notification.create({
+          isGlobal: false,
+          isAdminOnly: true,
+          title: 'User Login (Google)',
+          message: `${user.name} has logged in via Google.`,
+          type: 'login'
+        });
+      }
+    }
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { registerUser, verifyOtp, resendOtp, loginUser, getUserProfile, firebaseLogin };

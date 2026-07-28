@@ -22,6 +22,20 @@ export const useAuthStore = create(
           throw error;
         }
       },
+
+      loginWithFirebase: async (idToken) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data } = await api.post('/auth/firebase-login', { idToken });
+          set({ user: data, isLoading: false });
+        } catch (error) {
+          set({ 
+            error: error.response?.data?.message || 'Google sign-in failed', 
+            isLoading: false 
+          });
+          throw error;
+        }
+      },
       
       register: async (name, email, password) => {
         set({ isLoading: true, error: null });
