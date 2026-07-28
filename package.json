@@ -1,8 +1,9 @@
 {
   "name": "notevaultpro-root",
-  "version": "1.0.0",
   "private": true,
+  "version": "1.0.0",
   "scripts": {
+    "install": "npm install --prefix server",
     "build": "npm install --prefix server",
     "start": "npm start --prefix server"
   }
