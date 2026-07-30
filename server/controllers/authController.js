@@ -48,7 +48,7 @@ const registerUser = async (req, res, next) => {
     } catch (error) {
       console.error('Error sending email:', error);
       res.status(500);
-      throw new Error('Failed to send verification email');
+      throw new Error(`Failed to send verification email: ${error.message}`);
     }
 
     res.status(200).json({
@@ -153,7 +153,7 @@ const resendOtp = async (req, res, next) => {
     } catch (error) {
       console.error('Error sending email:', error);
       res.status(500);
-      throw new Error('Failed to send verification email');
+      throw new Error(`Failed to send verification email: ${error.message}`);
     }
 
     res.status(200).json({ message: 'OTP resent successfully' });

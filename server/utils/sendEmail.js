@@ -4,6 +4,13 @@ const sendEmail = async (options) => {
   let transporter;
   let isTestAccount = false;
 
+  // SMTP validation check in production/staging
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+      throw new Error('SMTP credentials (EMAIL_USER or EMAIL_PASS) are missing in the server environment variables.');
+    }
+  }
+
   // Use real credentials if available, otherwise generate a test account dynamically
   if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
     transporter = nodemailer.createTransport({
