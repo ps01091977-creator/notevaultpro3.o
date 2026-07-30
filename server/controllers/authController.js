@@ -17,44 +17,36 @@ const registerUser = async (req, res, next) => {
     let user = await User.findOne({ email });
 
     if (user) {
-      if (user.isVerified) {
-        res.status(400);
-        throw new Error('User already exists');
-      }
-      // If user exists but not verified, update name, password, and generate new OTP
-      user.name = name;
-      user.password = password;
-    } else {
-      user = new User({ name, email, password, role: 'user', isVerified: false });
+      res.status(400);
+      throw new Error('User already exists');
     }
 
-    const otp = generateOTP();
-    user.otp = otp;
-    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    console.log(`\n=============================================`);
-    console.log(`🔑 [OTP VERIFICATION] OTP for ${user.email} is: ${otp}`);
-    console.log(`=============================================\n`);
+    user = new User({
+      name,
+      email,
+      password,
+      role: 'user',
+      isVerified: true
+    });
 
     await user.save();
 
-    // Send OTP email
-    try {
-      await sendEmail({
-        email: user.email,
-        subject: 'NoteVault Pro - Verify your email',
-        message: `Your OTP for registration is: ${otp}\n\nIt will expire in 10 minutes.`,
-        html: `<h3>Welcome to NoteVault Pro!</h3><p>Your OTP for registration is: <b style="font-size: 20px;">${otp}</b></p><p>It will expire in 10 minutes.</p>`
-      });
-    } catch (error) {
-      console.error('Error sending email:', error);
-      res.status(500);
-      throw new Error(`Failed to send verification email: ${error.message}`);
-    }
+    // Notify admins
+    await Notification.create({
+      isGlobal: false,
+      isAdminOnly: true,
+      title: 'New User Registration',
+      message: `${user.name} (${user.email}) has just created a new verified account.`,
+      type: 'signup'
+    });
 
-    res.status(200).json({
-      message: 'OTP sent to your email',
-      requiresOtp: true,
-      email: user.email
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+      token: generateToken(user._id),
     });
   } catch (error) {
     next(error);

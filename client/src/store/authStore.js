@@ -41,7 +41,7 @@ export const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const { data } = await api.post('/auth/register', { name, email, password });
-          set({ isLoading: false });
+          set({ user: data, isLoading: false });
           return data;
         } catch (error) {
           set({ 
