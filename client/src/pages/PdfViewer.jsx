@@ -9,9 +9,19 @@ const PdfViewer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const isLocalhost = url && (url.includes('localhost') || url.includes('127.0.0.1'));
+  // Align localhost vs 127.0.0.1 based on current tab's hostname to prevent connection refusal issues
+  let cleanUrl = url || '';
+  if (cleanUrl && (cleanUrl.includes('localhost') || cleanUrl.includes('127.0.0.1'))) {
+    if (window.location.hostname === '127.0.0.1' && cleanUrl.includes('localhost')) {
+      cleanUrl = cleanUrl.replace('localhost', '127.0.0.1');
+    } else if (window.location.hostname === 'localhost' && cleanUrl.includes('127.0.0.1')) {
+      cleanUrl = cleanUrl.replace('127.0.0.1', 'localhost');
+    }
+  }
+
+  const isLocalhost = cleanUrl && (cleanUrl.includes('localhost') || cleanUrl.includes('127.0.0.1'));
   // Use native PDF viewer for localhost, and Google Docs Viewer for production
-  const googleDocsViewerUrl = url ? (isLocalhost ? url : `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`) : '';
+  const googleDocsViewerUrl = cleanUrl ? (isLocalhost ? cleanUrl : `https://docs.google.com/viewer?url=${encodeURIComponent(cleanUrl)}&embedded=true`) : '';
 
   useEffect(() => {
     if (!url) {
@@ -61,7 +71,7 @@ const PdfViewer = () => {
              <ArrowLeft className="w-4 h-4" /> Back
           </button>
           <a 
-            href={url} 
+            href={cleanUrl} 
             download 
             target="_blank" 
             rel="noreferrer"
@@ -92,7 +102,7 @@ const PdfViewer = () => {
             </p>
             <div className="flex gap-4">
               <a 
-                href={url} 
+                href={cleanUrl} 
                 target="_blank" 
                 rel="noreferrer"
                 className="btn-primary"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, MoreVertical, Pin, Trash2, FileText, Grid, List, BookText, FolderOpen, ArrowLeft } from 'lucide-react';
-import api from '../api/axios';
+import api, { getBackendUrl } from '../api/axios';
 
 import { useAuthStore } from '../store/authStore';
 
@@ -26,10 +26,6 @@ const Notes = () => {
   const [selectedNoteView, setSelectedNoteView] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
 
-  const getBackendUrl = () => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    return apiUrl.replace(/\/api\/?$/, '');
-  };
 
   useEffect(() => {
     fetchNotes();

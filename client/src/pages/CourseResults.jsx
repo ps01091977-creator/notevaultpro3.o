@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Grid3X3, List, Download, Eye, PlayCircle, Plus, FileText, FolderOpen, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import api from '../api/axios';
+import api, { getBackendUrl } from '../api/axios';
 import { useAuthStore } from '../store/authStore';
 
 const sectionByMaterial = {
@@ -44,10 +44,6 @@ const CourseResults = () => {
   const [uploadFile, setUploadFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const getBackendUrl = () => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    return apiUrl.replace(/\/api\/?$/, '');
-  };
 
   const getVideoSource = (video) => video?.youtubeUrl || video?.fileUrl || video?.videoUrl || '';
   const isYoutubeUrl = (url = '') => url.includes('youtube.com') || url.includes('youtu.be');

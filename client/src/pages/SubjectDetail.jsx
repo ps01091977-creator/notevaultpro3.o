@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, BookText, Video, Play, FileText, FolderOpen, Plus, Trash2 } from 'lucide-react';
-import api from '../api/axios';
+import api, { getBackendUrl } from '../api/axios';
 import { useAuthStore } from '../store/authStore';
 
 const SubjectDetail = () => {
@@ -40,10 +40,6 @@ const SubjectDetail = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [selectedNote, setSelectedNote] = useState(null);
 
-  const getBackendUrl = () => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    return apiUrl.replace(/\/api\/?$/, '');
-  };
 
   const getVideoUrl = (video) => video?.youtubeUrl || video?.fileUrl || video?.videoUrl || '';
   const getPlayableVideoSrc = (url) => {

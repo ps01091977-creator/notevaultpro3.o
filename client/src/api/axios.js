@@ -31,4 +31,16 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export const getBackendUrl = () => {
+  let url = api.defaults.baseURL || '';
+  url = url.replace(/\/api\/?$/, '');
+  // Match hostname to resolve local IPv6 vs IPv4 mismatch issues
+  if (url.includes('localhost') && window.location.hostname === '127.0.0.1') {
+    url = url.replace('localhost', '127.0.0.1');
+  } else if (url.includes('127.0.0.1') && window.location.hostname === 'localhost') {
+    url = url.replace('127.0.0.1', 'localhost');
+  }
+  return url;
+};
+
 export default api;
