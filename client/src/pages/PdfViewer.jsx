@@ -9,8 +9,9 @@ const PdfViewer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Use Google Docs Viewer for reliable PDF rendering across devices
-  const googleDocsViewerUrl = url ? `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true` : '';
+  const isLocalhost = url && (url.includes('localhost') || url.includes('127.0.0.1'));
+  // Use native PDF viewer for localhost, and Google Docs Viewer for production
+  const googleDocsViewerUrl = url ? (isLocalhost ? url : `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`) : '';
 
   useEffect(() => {
     if (!url) {

@@ -44,7 +44,10 @@ const CourseResults = () => {
   const [uploadFile, setUploadFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const getBackendUrl = () => '';
+  const getBackendUrl = () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    return apiUrl.replace(/\/api\/?$/, '');
+  };
 
   const getVideoSource = (video) => video?.youtubeUrl || video?.fileUrl || video?.videoUrl || '';
   const isYoutubeUrl = (url = '') => url.includes('youtube.com') || url.includes('youtu.be');
@@ -196,8 +199,8 @@ const CourseResults = () => {
       } else {
         let fileUrl = '';
         if (uploadType === 'pdf') {
-          if (uploadFile.size > 10 * 1024 * 1024) {
-            alert('File size too large! Cloudinary Free tier only allows PDFs up to 10MB. Please compress your PDF before uploading.');
+          if (uploadFile.size > 500 * 1024 * 1024) {
+            alert('File size too large! Maximum allowed size is 500MB.');
             setIsUploading(false);
             return;
           }

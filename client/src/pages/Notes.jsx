@@ -27,7 +27,8 @@ const Notes = () => {
   const [selectedSubject, setSelectedSubject] = useState(null);
 
   const getBackendUrl = () => {
-    return '';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    return apiUrl.replace(/\/api\/?$/, '');
   };
 
   useEffect(() => {
@@ -212,7 +213,8 @@ const Notes = () => {
                     className="flex flex-col flex-1 group cursor-pointer hover:border-primary/50 transition-colors"
                     onClick={() => {
                       if (note.type === 'pdf') {
-                        window.open(`${getBackendUrl()}${note.fileUrl}`, '_blank');
+                        const fullUrl = note.fileUrl.startsWith('http') ? note.fileUrl : `${getBackendUrl()}${note.fileUrl}`;
+                        window.open(`/view-pdf?url=${encodeURIComponent(fullUrl)}&title=${encodeURIComponent(note.title)}`, '_blank');
                       } else {
                         setSelectedNoteView(note);
                       }
@@ -283,8 +285,8 @@ const Notes = () => {
               try {
                 let fileUrl = '';
                 if (newNote.type === 'pdf' && selectedFile) {
-                  if (selectedFile.size > 10 * 1024 * 1024) {
-                    alert('File size too large! Cloudinary Free tier only allows PDFs up to 10MB. Please compress your PDF before uploading.');
+                  if (selectedFile.size > 500 * 1024 * 1024) {
+                    alert('File size too large! Maximum allowed size is 500MB.');
                     setIsSubmitting(false);
                     return;
                   }

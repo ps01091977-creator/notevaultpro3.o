@@ -41,7 +41,8 @@ const SubjectDetail = () => {
   const [selectedNote, setSelectedNote] = useState(null);
 
   const getBackendUrl = () => {
-    return '';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    return apiUrl.replace(/\/api\/?$/, '');
   };
 
   const getVideoUrl = (video) => video?.youtubeUrl || video?.fileUrl || video?.videoUrl || '';
@@ -357,7 +358,7 @@ const SubjectDetail = () => {
                       onClick={() => {
                         if (note.type === 'pdf') {
                           const fullUrl = note.fileUrl.startsWith('http') ? note.fileUrl : `${getBackendUrl()}${note.fileUrl}`;
-                          window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}`, '_blank');
+                          window.open(`/view-pdf?url=${encodeURIComponent(fullUrl)}&title=${encodeURIComponent(note.title)}`, '_blank');
                         } else {
                           setSelectedNote(note);
                         }
